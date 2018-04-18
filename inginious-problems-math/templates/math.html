@@ -1,0 +1,15 @@
+$def with (inputId)
+
+$#
+$# This file is part of INGInious. See the LICENSE and the COPYRIGHTS files for
+$# more information about the licensing of this file.
+$#
+
+
+<div id="math-field-$inputId"></div>
+
+<script>
+var matheditor_$inputId = new MathEditor('$inputId');
+</script>
+
+<input type="hidden" name="$inputId" value="" class="monospace form-control"/>
