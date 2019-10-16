@@ -74,8 +74,8 @@ class DisplayableMathProblem(MathProblem, DisplayableProblem):
         MathProblem.__init__(self, task, problemid, content, translations)
 
     @classmethod
-    def get_type_name(self, gettext):
-        return gettext("math")
+    def get_type_name(self, language):
+        return "math"
 
     @classmethod
     def get_renderer(cls, template_helper):
