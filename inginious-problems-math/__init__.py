@@ -87,11 +87,11 @@ class DisplayableMathProblem(MathProblem, DisplayableProblem):
         return str(DisplayableMathProblem.get_renderer(template_helper).math(self.get_id()))
 
     @classmethod
-    def show_editbox(cls, template_helper, key):
+    def show_editbox(cls, template_helper, key, language):
         return DisplayableMathProblem.get_renderer(template_helper).math_edit(key)
 
     @classmethod
-    def show_editbox_templates(cls, template_helper, key):
+    def show_editbox_templates(cls, template_helper, key, language):
         return ""
 
 
