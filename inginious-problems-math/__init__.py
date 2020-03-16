@@ -12,6 +12,7 @@ from sympy import simplify
 
 from inginious.common.tasks_problems import Problem
 from inginious.frontend.task_problems import DisplayableProblem
+from inginious.frontend.parsable_text import ParsableText
 
 __version__ = "0.1.dev0"
 
@@ -39,6 +40,7 @@ class MathProblem(Problem):
 
     def __init__(self, task, problemid, content):
         Problem.__init__(self, task, problemid, content)
+        self._header = content['header'] if "header" in content else ""
         self._answer = str(content.get("answer", ""))
 
     @classmethod
@@ -95,7 +97,9 @@ class DisplayableMathProblem(MathProblem, DisplayableProblem):
 
     def show_input(self, template_helper, language, seed):
         """ Show MatchProblem """
-        return str(DisplayableMathProblem.get_renderer(template_helper).math(self.get_id()))
+        header = ParsableText(self.gettext(language, self._header), "rst",
+                              translation=self.get_translation_obj(language))
+        return str(DisplayableMathProblem.get_renderer(template_helper).math(self.get_id(), header))
 
     @classmethod
     def show_editbox(cls, template_helper, key, language):
