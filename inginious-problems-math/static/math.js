@@ -8,6 +8,6 @@ function load_input_math(submissionid, key, input) {
 
 function studio_init_template_math(well, pid, problem)
 {
-    if("answer" in problem)
-        $('#answer-' + pid, well).val(problem["answer"]);
+    window["matheditor_" + pid] = new MathEditor("problem[" + pid + "][answer]");
+    window["matheditor_" + pid].setLatex(problem["answer"]);
 }

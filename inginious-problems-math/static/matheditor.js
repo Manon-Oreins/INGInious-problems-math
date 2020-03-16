@@ -26,7 +26,7 @@ function MathEditor(pid){
         spaceBehavesLikeTab: true, // configurable
         handlers: {
           edit: function() { // useful event handlers
-              $('input[name=' + pid + ']').val(ab.latex());
+              $('input[name=' + $.escapeSelector(pid) + ']').val(ab.latex());
           },
           enter: function() {},
         }
