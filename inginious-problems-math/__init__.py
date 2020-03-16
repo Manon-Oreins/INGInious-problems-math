@@ -5,7 +5,10 @@
 
 import os
 import web
-import json
+
+from sympy.parsing.latex import parse_latex
+from sympy.parsing.latex.errors import LaTeXParsingError
+from sympy import simplify
 
 from inginious.common.tasks_problems import Problem
 from inginious.frontend.task_problems import DisplayableProblem
@@ -49,14 +52,22 @@ class MathProblem(Problem):
         return str
 
     def check_answer(self, task_input, language):
-        # By default, everything pass in the docker agent.
-        # If answer is specified, can be assessed in MCQ-like environnment using check_answer
         if not self._answer:
             return None, None, None, 0
-        elif task_input[self.get_id()].strip() == self._answer:
-            return True, None, ["correct answer"], 0
+
+        if not task_input[self.get_id()]:
+            return False, None, ["_wrong_answer"], 1
+
+        try:
+            student_answer = parse_latex(task_input[self.get_id()])
+            correct_answer = parse_latex(self._answer)
+        except LaTeXParsingError as e:
+            return False, None, ["_wrong_answer", "Parsing error: " + str(e)], 1
+
+        if simplify(student_answer-correct_answer) == 0:
+            return True, None, ["_correct_answer"], 0
         else:
-            return False, None, ["wrong answer"], 0
+            return False, None, ["_wrong_answer"], 1
 
     @classmethod
     def parse_problem(self, problem_content):
