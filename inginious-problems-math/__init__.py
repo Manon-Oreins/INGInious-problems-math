@@ -43,6 +43,8 @@ class MathProblem(Problem):
         Problem.__init__(self, task, problemid, content)
         self._header = content['header'] if "header" in content else ""
         self._answer = str(content.get("answer", ""))
+        self._error_message = content.get("error_message", None)
+        self._success_message = content.get("success_message", None)
 
     @classmethod
     def get_type(cls):
@@ -73,9 +75,11 @@ class MathProblem(Problem):
             return False, None, ["_wrong_answer", "Parsing error: " + str(e)], 1
 
         if simplify(student_answer-correct_answer) == 0:
-            return True, None, ["_correct_answer"], 0
+            msg = self.gettext(language, self._success_message) or "_correct_answer"
+            return True, None, [msg], 0
         else:
-            return False, None, ["_wrong_answer"], 1
+            msg = self.gettext(language, self._error_message) or "_wrong_answer"
+            return False, None, [msg], 1
 
     @classmethod
     def parse_problem(self, problem_content):

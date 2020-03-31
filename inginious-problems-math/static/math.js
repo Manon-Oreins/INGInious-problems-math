@@ -9,7 +9,19 @@ function load_input_math(submissionid, key, input) {
 function studio_init_template_math(well, pid, problem)
 {
     window["matheditor_" + pid] = new MathEditor("problem[" + pid + "][answer]");
-    window["matheditor_" + pid].setLatex(problem["answer"]);
+
+    if("answer" in problem)
+        window["matheditor_" + pid].setLatex(problem["answer"]);
+
+    var success_message = "";
+    var error_message = "";
+    if("success_message" in problem)
+        success_message = problem["success_message"];
+    if("error_message" in problem)
+        error_message = problem["error_message"];
+
+    registerCodeEditor($('#success_message-' + pid)[0], 'rst', 1).setValue(success_message);
+    registerCodeEditor($('#error_message-' + pid)[0], 'rst', 1).setValue(error_message);
 }
 
 function load_feedback_math(key, content) {
