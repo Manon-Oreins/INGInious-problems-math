@@ -4,11 +4,12 @@
 # more information about the licensing of this file.
 
 import os
+import re
 import web
 
 from sympy.parsing.latex import parse_latex
 from sympy.parsing.latex.errors import LaTeXParsingError
-from sympy import simplify
+from sympy import simplify, sympify
 
 from inginious.common.tasks_problems import Problem
 from inginious.frontend.task_problems import DisplayableProblem
@@ -61,8 +62,13 @@ class MathProblem(Problem):
             return False, None, ["_wrong_answer"], 1
 
         try:
-            student_answer = parse_latex(task_input[self.get_id()])
-            correct_answer = parse_latex(self._answer)
+            # The \left and \right prefix are not supported by sympy (and useless for treatment)
+            student_answer = re.sub("(\\\left|\\\\right)", "", task_input[self.get_id()])
+            correct_answer = re.sub("(\\\left|\\\\right)", "", self._answer)
+
+            # Sympify the parsed formulae to interpret some constant as pi
+            student_answer = sympify(str(parse_latex(student_answer)))
+            correct_answer = sympify(str(parse_latex(correct_answer)))
         except LaTeXParsingError as e:
             return False, None, ["_wrong_answer", "Parsing error: " + str(e)], 1
 
