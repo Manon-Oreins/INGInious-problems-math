@@ -69,12 +69,13 @@ class MathProblem(Problem):
             correct_answer = re.sub("(\\\left|\\\\right)", "", self._answer)
 
             # Sympify the parsed formulae to interpret some constant as pi
-            student_answer = sympify(str(parse_latex(student_answer)))
-            correct_answer = sympify(str(parse_latex(correct_answer)))
+            student_answer = parse_latex(student_answer)
+            correct_answer = parse_latex(correct_answer)
         except LaTeXParsingError as e:
             return False, None, ["_wrong_answer", "Parsing error: " + str(e)], 1
 
-        if simplify(student_answer-correct_answer) == 0:
+        if simplify(student_answer) == simplify(correct_answer) or \
+                simplify(sympify(str(student_answer))) == simplify(sympify(str(correct_answer))):
             msg = self.gettext(language, self._success_message) or "_correct_answer"
             return True, None, [msg], 0
         else:
