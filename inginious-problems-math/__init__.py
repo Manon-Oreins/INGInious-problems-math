@@ -45,6 +45,7 @@ class MathProblem(Problem):
         self._answer = str(content.get("answer", ""))
         self._error_message = content.get("error_message", None)
         self._success_message = content.get("success_message", None)
+        self._choices = content.get("choices", [])
 
     @classmethod
     def get_type(cls):
@@ -79,12 +80,32 @@ class MathProblem(Problem):
             msg = self.gettext(language, self._success_message) or "_correct_answer"
             return True, None, [msg], 0
         else:
+            # Iterate on possibles student choices:
+            for choice in self._choices:
+                choice_answer = re.sub("(\\\left|\\\\right)", "", choice["answer"])
+                choice_answer = parse_latex(choice_answer)
+                if simplify(student_answer) == simplify(choice_answer) or \
+                        simplify(sympify(str(student_answer))) == simplify(sympify(str(choice_answer))):
+                    msg = self.gettext(language, choice["feedback"])
+                    return False, None, [msg], 1
+            # If not among choices, return the default error message
             msg = self.gettext(language, self._error_message) or "_wrong_answer"
             return False, None, [msg], 1
 
     @classmethod
     def parse_problem(self, problem_content):
-        return Problem.parse_problem(problem_content)
+        problem_content = Problem.parse_problem(problem_content)
+
+        if "choices" in problem_content:
+            problem_content["choices"] = [val for _, val in
+                                          sorted(iter(problem_content["choices"].items()), key=lambda x: int(x[0]))
+                                          if val["feedback"].strip()]
+
+        for message in ["error_message", "success_message"]:
+            if message in problem_content and problem_content[message].strip() == "":
+                del problem_content[message]
+
+        return problem_content
 
     @classmethod
     def get_text_fields(cls):
@@ -118,7 +139,7 @@ class DisplayableMathProblem(MathProblem, DisplayableProblem):
 
     @classmethod
     def show_editbox_templates(cls, template_helper, key, language):
-        return ""
+        return DisplayableMathProblem.get_renderer(template_helper).math_edit_templates(key)
 
 
 def init(plugin_manager, course_factory, client, plugin_config):

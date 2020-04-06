@@ -1,0 +1,33 @@
+$def with (key)
+
+$#
+$# This file is part of INGInious. See the LICENSE and the COPYRIGHTS files for
+$# more information about the licensing of this file.
+$#
+<div id="subproblem_$(key)_choice" style="display:none;">
+    <div class="card">
+        <div class="card-body">
+            <div class="form-group row">
+                <label for="choice-PID-CHOICE" class="col-sm-2 control-label">$:_("Content")</label>
+                <div class="col-sm-10">
+                    <div id="math-field-problem[PID][choices][CHOICE][answer]"></div>
+                    <input type="hidden" id="choice-PID-CHOICE" name="problem[PID][choices][CHOICE][answer]" value="" class="monospace form-control"/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="choice-feedback-PID-CHOICE" class="col-sm-2 control-label">$:_("Feedback message if chosen answer")</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control subproblem_$(key)_feedback" name="problem[PID][choices][CHOICE][feedback]"
+                              placeholder="$:_('An optional feedback message')" id="choice-feedback-PID-CHOICE"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <button class="btn btn-danger btn-sm btn-block" type="button" onclick="math_delete_choice('PID',CHOICE)">
+                        <i class="fa fa-remove"></i> $:_("Delete")
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
