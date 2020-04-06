@@ -9,7 +9,7 @@ import web
 
 from sympy.parsing.latex import parse_latex
 from sympy.parsing.latex.errors import LaTeXParsingError
-from sympy import simplify, sympify
+from sympy import simplify, sympify, N
 
 from inginious.common.tasks_problems import Problem
 from inginious.frontend.task_problems import DisplayableProblem
@@ -43,6 +43,7 @@ class MathProblem(Problem):
         Problem.__init__(self, task, problemid, content)
         self._header = content['header'] if "header" in content else ""
         self._answer = str(content.get("answer", ""))
+        self._tolerance = content.get("tolerance", None)
         self._error_message = content.get("error_message", None)
         self._success_message = content.get("success_message", None)
         self._choices = content.get("choices", [])
@@ -65,36 +66,51 @@ class MathProblem(Problem):
             return False, None, ["_wrong_answer"], 1
 
         try:
-            # The \left and \right prefix are not supported by sympy (and useless for treatment)
-            student_answer = re.sub("(\\\left|\\\\right)", "", task_input[self.get_id()])
-            correct_answer = re.sub("(\\\left|\\\\right)", "", self._answer)
-
-            # Sympify the parsed formulae to interpret some constant as pi
-            student_answer = parse_latex(student_answer)
-            correct_answer = parse_latex(correct_answer)
+            student_answer = MathProblem.parse_equation(task_input[self.get_id()])
+            correct_answer = MathProblem.parse_equation(self._answer)
         except LaTeXParsingError as e:
             return False, None, ["_wrong_answer", "Parsing error: " + str(e)], 1
 
-        if simplify(student_answer) == simplify(correct_answer) or \
-                simplify(sympify(str(student_answer))) == simplify(sympify(str(correct_answer))):
+        if self.is_equal(student_answer, correct_answer):
             msg = self.gettext(language, self._success_message) or "_correct_answer"
             return True, None, [msg], 0
         else:
             # Iterate on possibles student choices:
             for choice in self._choices:
-                choice_answer = re.sub("(\\\left|\\\\right)", "", choice["answer"])
-                choice_answer = parse_latex(choice_answer)
-                if simplify(student_answer) == simplify(choice_answer) or \
-                        simplify(sympify(str(student_answer))) == simplify(sympify(str(choice_answer))):
-                    msg = self.gettext(language, choice["feedback"])
-                    return False, None, [msg], 1
+                try:
+                    choice_answer = MathProblem.parse_equation(choice_answer)
+                    if self.is_equal(student_answer, choice_answer):
+                        msg = self.gettext(language, choice["feedback"])
+                        return False, None, [msg], 1
+                except LaTeXParsingError as e:
+                    return False, None, ["_wrong_answer", "Parsing error: " + str(e)], 1
             # If not among choices, return the default error message
             msg = self.gettext(language, self._error_message) or "_wrong_answer"
             return False, None, [msg], 1
 
     @classmethod
-    def parse_problem(self, problem_content):
+    def parse_equation(cls, latex_str):
+        # The \left and \right prefix are not supported by sympy (and useless for treatment)
+        latex_str = re.sub("(\\\left|\\\\right)", "", latex_str)
+        return parse_latex(latex_str)
+
+    def is_equal(self, eq1, eq2):
+        if not simplify(eq1-eq2) or not simplify(sympify(str(eq1)) - sympify(str(eq2))):
+            return True
+        elif self._tolerance:
+            return abs(N(sympify(str(eq1)) - sympify(str(eq2)))) < self._tolerance
+        else:
+            return abs(N(sympify(str(eq1)) - sympify(str(eq2)))) == 0
+
+    @classmethod
+    def parse_problem(cls, problem_content):
         problem_content = Problem.parse_problem(problem_content)
+
+        if "tolerance" in problem_content:
+            if problem_content["tolerance"]:
+                problem_content["tolerance"] = float(problem_content["tolerance"])
+            else:
+                del problem_content["tolerance"]
 
         if "choices" in problem_content:
             problem_content["choices"] = [val for _, val in

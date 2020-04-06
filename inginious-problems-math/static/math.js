@@ -13,13 +13,17 @@ function studio_init_template_math(well, pid, problem)
     if("answer" in problem)
         window["matheditor_" + pid].setLatex(problem["answer"]);
 
+    var tolerance = "";
     var success_message = "";
     var error_message = "";
+    if("tolerance" in problem)
+        tolerance = problem["tolerance"];
     if("success_message" in problem)
         success_message = problem["success_message"];
     if("error_message" in problem)
         error_message = problem["error_message"];
 
+    $("#tolerance-" + pid).val(tolerance);
     registerCodeEditor($('#success_message-' + pid)[0], 'rst', 1).setValue(success_message);
     registerCodeEditor($('#error_message-' + pid)[0], 'rst', 1).setValue(error_message);
 
