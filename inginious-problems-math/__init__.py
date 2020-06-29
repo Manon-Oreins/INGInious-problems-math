@@ -6,6 +6,7 @@
 import os
 import re
 import web
+import json
 
 from sympy.parsing.latex import parse_latex
 from sympy.parsing.latex.errors import LaTeXParsingError
@@ -56,12 +57,25 @@ class HintPage(INGIniousAuthPage):
 
         problemid = data.get("problemid", "")
         problems = task.get_problems()
+        hints = ""
         for problem in problems:
             if problem.get_id() == problemid:
-                return ParsableText(problem.gettext(language, problem._hints), "rst",
+                hints = ParsableText(problem.gettext(language, problem._hints), "rst",
                                     translation=problem.get_translation_obj(language))
 
-        return ""
+        if hints:
+            user_tasks = self.database.user_tasks.find_one({"username": username, "courseid": courseid,
+                                                            "taskid": taskid})
+            try:
+                state = json.loads(user_tasks.get("state", "{}"))
+            except:
+                state = {}
+
+            state.setdefault("hints", {})[problemid] = True
+            self.database.user_tasks.update_one({"username": username, "courseid": courseid,
+                                                 "taskid": taskid}, {"$set": {"state": json.dumps(state)}})
+
+        return hints
 
 class MathProblem(Problem):
     """Display an input box and check that the content is correct"""
