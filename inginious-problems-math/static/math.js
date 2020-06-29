@@ -16,16 +16,20 @@ function studio_init_template_math(well, pid, problem)
     var tolerance = "";
     var success_message = "";
     var error_message = "";
+    var hints = "";
     if("tolerance" in problem)
         tolerance = problem["tolerance"];
     if("success_message" in problem)
         success_message = problem["success_message"];
     if("error_message" in problem)
         error_message = problem["error_message"];
+    if("hints" in problem)
+        hints = problem["hints"];
 
     $("#tolerance-" + pid).val(tolerance);
     registerCodeEditor($('#success_message-' + pid)[0], 'rst', 1).setValue(success_message);
     registerCodeEditor($('#error_message-' + pid)[0], 'rst', 1).setValue(error_message);
+    registerCodeEditor($('#hints-' + pid)[0], 'rst', 1).setValue(hints);
 
     jQuery.each(problem["choices"], function(index, elem) {
         math_create_choice(pid, elem);
@@ -66,3 +70,23 @@ function math_delete_choice(pid, choice)
 {
     $('#choice-' + choice + '-' + pid).detach();
 }
+
+$( document ).ready(function() {
+    $(".math_modal").on('show.bs.modal', function (e) {
+        var button = $(e.relatedTarget); // Button that triggered the modal
+        var courseid = button.data('courseid');
+        var taskid = button.data('taskid');
+        var problemid = button.data('problemid');
+
+        $.ajax({
+            url: '/plugins/math/hint',
+            type: 'post',
+            data: {courseid: courseid, taskid: taskid, problemid: problemid},
+            success: function(response){
+                // Add response in Modal body
+                $('.math_modal_' + problemid + ' .modal-body').html(response);
+            }
+        });
+        console.log(courseid + " " + taskid + " " + problemid);
+    })
+});

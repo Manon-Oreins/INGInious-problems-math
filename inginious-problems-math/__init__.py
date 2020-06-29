@@ -14,6 +14,8 @@ from sympy import simplify, sympify, N
 from inginious.common.tasks_problems import Problem
 from inginious.frontend.task_problems import DisplayableProblem
 from inginious.frontend.parsable_text import ParsableText
+from inginious.frontend.pages.utils import INGIniousAuthPage
+from inginious.frontend.pages.course import handle_course_unavailable
 
 __version__ = "0.1.dev0"
 
@@ -36,6 +38,31 @@ class StaticMockPage(object):
         return self.GET(path)
 
 
+class HintPage(INGIniousAuthPage):
+    def POST_AUTH(self):
+        data = web.input()
+        username = self.user_manager.session_username()
+        language = self.user_manager.session_language()
+        courseid = data.get("courseid", None)
+        taskid = data.get("taskid", None)
+
+        course = self.course_factory.get_course(courseid)
+        if not self.user_manager.course_is_open_to_user(course, username):
+            return handle_course_unavailable(self.cp.app.get_homepath(), self.template_helper, self.user_manager, course)
+
+        task = course.get_task(taskid)
+        if not self.user_manager.task_is_visible_by_user(task, username):
+            return self.template_helper.get_renderer().task_unavailable()
+
+        problemid = data.get("problemid", "")
+        problems = task.get_problems()
+        for problem in problems:
+            if problem.get_id() == problemid:
+                return ParsableText(problem.gettext(language, problem._hints), "rst",
+                                    translation=problem.get_translation_obj(language))
+
+        return ""
+
 class MathProblem(Problem):
     """Display an input box and check that the content is correct"""
 
@@ -44,6 +71,7 @@ class MathProblem(Problem):
         self._header = content['header'] if "header" in content else ""
         self._answer = str(content.get("answer", ""))
         self._tolerance = content.get("tolerance", None)
+        self._hints = content.get("hints", None)
         self._error_message = content.get("error_message", None)
         self._success_message = content.get("success_message", None)
         self._choices = content.get("choices", [])
@@ -147,7 +175,7 @@ class DisplayableMathProblem(MathProblem, DisplayableProblem):
         """ Show MatchProblem """
         header = ParsableText(self.gettext(language, self._header), "rst",
                               translation=self.get_translation_obj(language))
-        return str(DisplayableMathProblem.get_renderer(template_helper).math(self.get_id(), header))
+        return str(DisplayableMathProblem.get_renderer(template_helper).math(self._task, self.get_id(), header, self._hints))
 
     @classmethod
     def show_editbox(cls, template_helper, key, language):
@@ -161,6 +189,7 @@ class DisplayableMathProblem(MathProblem, DisplayableProblem):
 def init(plugin_manager, course_factory, client, plugin_config):
     # TODO: Replace by shared static middleware and let webserver serve the files
     plugin_manager.add_page('/plugins/math/static/(.+)', StaticMockPage)
+    plugin_manager.add_page('/plugins/math/hint', HintPage)
     plugin_manager.add_hook("css", lambda: "/plugins/math/static/mathquill.css")
     plugin_manager.add_hook("css", lambda: "/plugins/math/static/matheditor.css")
     plugin_manager.add_hook("javascript_header", lambda: "/plugins/math/static/mathquill.min.js")
