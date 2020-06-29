@@ -85,8 +85,8 @@ $( document ).ready(function() {
             success: function(response){
                 // Add response in Modal body
                 $('.math_modal_' + problemid + ' .modal-body').html(response);
+                MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
             }
         });
-        console.log(courseid + " " + taskid + " " + problemid);
     })
 });
