@@ -83,7 +83,7 @@ class MathProblem(Problem):
     def __init__(self, task, problemid, content):
         Problem.__init__(self, task, problemid, content)
         self._header = content['header'] if "header" in content else ""
-        self._answers = content.get("answers", "")
+        self._answers = content.get("answers", []) or [content.get("answer", "")] # retrocompat
         self._tolerance = content.get("tolerance", None)
         self._hints = content.get("hints", None)
         self._error_message = content.get("error_message", None)

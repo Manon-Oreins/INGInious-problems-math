@@ -24,6 +24,8 @@ function studio_init_template_math(well, pid, problem)
         error_message = problem["error_message"];
     if("hints" in problem)
         hints = problem["hints"];
+    if("answer" in problem) // retrocompat
+        problem["answers"] = [problem["answer"]]
 
     $("#tolerance-" + pid).val(tolerance);
     registerCodeEditor($('#success_message-' + pid)[0], 'rst', 1).setValue(success_message);
