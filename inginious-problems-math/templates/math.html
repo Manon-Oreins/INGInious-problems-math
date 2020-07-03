@@ -6,10 +6,13 @@ $# more information about the licensing of this file.
 $#
 <div id="task_alert_$inputId" class="task_alert_problem"></div>
 
-$if hints:
-    <div class="pull-right">
+<div class="btn-group pull-right">
+    $if hints:
         <a type="button" class="btn btn-secondary" data-toggle="modal" data-target=".math_modal_$inputId" data-courseid="$task.get_course_id()" data-taskid="$task.get_id()" data-problemid="$inputId">$_("Hint")</a>
-    </div>
+    <a type="button" class="btn btn-secondary" onclick="math_add_answer('$inputId', '')">$_("Add answer")</a>
+</div>
+
+$if hints:
     <div class="modal fade math_modal math_modal_$inputId" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -29,10 +32,9 @@ $if hints:
 
 <div style="min-height:40px">$:header</div>
 
-<div id="math-field-$inputId"></div>
+<div id="math-fields-$inputId">
+</div>
 
 <script>
-    var matheditor_$inputId = new MathEditor('$inputId');
+    math_add_answer('$inputId', '');
 </script>
-
-<input type="hidden" name="$inputId" value="" class="monospace form-control"/>

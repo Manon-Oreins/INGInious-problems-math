@@ -35,19 +35,22 @@ $#
     </div>
 </div>
 <div class="form-group row">
-    <label for="answer-PID" class="col-sm-2 control-label">Expected answer</label>
-    <div class="col-sm-10">
-        <div id="math-field-problem[PID][answer]"></div>
-        <input type="hidden" id="answer-PID" name="problem[PID][answer]" value="" class="monospace form-control"/>
-    </div>
-</div>
-<div class="form-group row">
     <label for="tolerance-PID" class="col-sm-2 control-label">$:_("Tolerance")</label>
     <div class="col-sm-10">
         <input type="text" class="form-control" id="tolerance-PID" name="problem[PID][tolerance]" placeholder="0.01"/>
     </div>
 </div>
-<div class="form-group">
+<div class="form-group row">
+    <div class="col-sm-12">
+        <h4 style="text-align: center">$:_("Expected answers")</h4>
+        <div id="answers-PID" class="mb-3">
+        </div>
+        <button class="btn btn-info btn-sm btn-block" type="button" onclick="math_create_answer('PID','')">
+            <i class="fa fa-plus"></i> $:_("Add new expected answer")
+        </button>
+    </div>
+</div>
+<div class="form-group row">
     <div class="col-sm-12">
         <h4 style="text-align: center">$:_("Possible wrong answers")</h4>
         <div id="choices-PID" class="mb-3">

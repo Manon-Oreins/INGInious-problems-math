@@ -1,18 +1,17 @@
 function load_input_math(submissionid, key, input) {
     var field = $("form#task input[name='" + key + "']");
-    if(key in input)
-         window["matheditor_" + key].setLatex(input[key]);
-    else
-         window["matheditor_" + key].setLatex("");
+    $("#math-fields-" + key).html("");
+    if(key in input) {
+        $.each(input[key], function(index) {
+            math_add_answer(key, this);
+        });
+    } else {
+        math_add_answer(key, '');
+    }
 }
 
 function studio_init_template_math(well, pid, problem)
 {
-    window["matheditor_" + pid] = new MathEditor("problem[" + pid + "][answer]");
-
-    if("answer" in problem)
-        window["matheditor_" + pid].setLatex(problem["answer"]);
-
     var tolerance = "";
     var success_message = "";
     var error_message = "";
@@ -33,6 +32,10 @@ function studio_init_template_math(well, pid, problem)
 
     jQuery.each(problem["choices"], function(index, elem) {
         math_create_choice(pid, elem);
+    });
+
+    jQuery.each(problem["answers"], function(index, elem) {
+        math_create_answer(pid, elem);
     });
 }
 
@@ -69,6 +72,48 @@ function math_create_choice(pid, choice_data) {
 function math_delete_choice(pid, choice)
 {
     $('#choice-' + choice + '-' + pid).detach();
+}
+
+function math_create_answer(pid, choice_data) {
+    var well = $(studio_get_problem(pid));
+
+    var index = 0;
+    while($('#answer-' + index + '-' + pid).length != 0)
+        index++;
+
+    var row = $("#subproblem_math_answer").html();
+    var new_row_content = row.replace(/PID/g, pid).replace(/CHOICE/g, index);
+    var new_row = $("<div></div>").attr('id', 'answer-' + index + '-' + pid).html(new_row_content);
+    $("#answers-" + pid, well).append(new_row);
+
+    var editor_answer = new MathEditor("problem[" + pid + "][answers][" + index + "]");
+    editor_answer.setLatex(choice_data);
+}
+
+function math_delete_answer(pid, choice)
+{
+    $('#answer-' + choice + '-' + pid).detach();
+}
+
+function math_add_answer(pid, data) {
+    var index = 0;
+    while($('#math-field-' + index + '-' + pid).length != 0)
+        index++;
+
+    var div = $("<div></div>");
+    var del_btn = $("<button></button>").attr("type", "button")
+        .attr("class", "close")
+        .attr("onclick", "$(this).parent().remove();");
+    del_btn.html('<span>&times;</span>');
+    var math_field = $("<div></div>").attr('id', 'math-field-' + index + '-' + pid);
+    var math_input = $("<input></input>").attr('id', 'math-input-' + index + '-' + pid)
+        .attr("name", pid)
+        .attr("type", "hidden");
+    div.append(del_btn).append(math_field).append(math_input);
+    $("#math-fields-" + pid).append(div);
+
+    var editor_answer = new MathEditor(index + "-" + pid);
+    editor_answer.setLatex(data);
 }
 
 $( document ).ready(function() {

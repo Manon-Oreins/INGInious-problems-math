@@ -4,14 +4,35 @@ $#
 $# This file is part of INGInious. See the LICENSE and the COPYRIGHTS files for
 $# more information about the licensing of this file.
 $#
+<div id="subproblem_$(key)_answer" style="display:none;">
+    <div class="card">
+        <div class="card-body">
+            <div class="form-group row">
+                <label for="math-input-problem[PID][answers][CHOICE]" class="col-sm-2 control-label">$:_("Content")</label>
+                <div class="col-sm-10">
+                    <div id="math-field-problem[PID][answers][CHOICE]"></div>
+                    <input type="hidden" id="math-input-problem[PID][answers][CHOICE]" name="problem[PID][answers][CHOICE]" value="" class="monospace form-control"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <button class="btn btn-danger btn-sm btn-block" type="button" onclick="math_delete_answer('PID',CHOICE)">
+                        <i class="fa fa-remove"></i> $:_("Delete")
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="subproblem_$(key)_choice" style="display:none;">
     <div class="card">
         <div class="card-body">
             <div class="form-group row">
-                <label for="choice-PID-CHOICE" class="col-sm-2 control-label">$:_("Content")</label>
+                <label for="math-input-problem[PID][choices][CHOICE][answer]" class="col-sm-2 control-label">$:_("Content")</label>
                 <div class="col-sm-10">
                     <div id="math-field-problem[PID][choices][CHOICE][answer]"></div>
-                    <input type="hidden" id="choice-PID-CHOICE" name="problem[PID][choices][CHOICE][answer]" value="" class="monospace form-control"/>
+                    <input type="hidden" id="math-input-problem[PID][choices][CHOICE][answer]" name="problem[PID][choices][CHOICE][answer]" value="" class="monospace form-control"/>
                 </div>
             </div>
             <div class="form-group row">

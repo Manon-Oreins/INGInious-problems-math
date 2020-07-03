@@ -83,7 +83,7 @@ class MathProblem(Problem):
     def __init__(self, task, problemid, content):
         Problem.__init__(self, task, problemid, content)
         self._header = content['header'] if "header" in content else ""
-        self._answer = str(content.get("answer", ""))
+        self._answers = content.get("answers", "")
         self._tolerance = content.get("tolerance", None)
         self._hints = content.get("hints", None)
         self._error_message = content.get("error_message", None)
@@ -98,37 +98,47 @@ class MathProblem(Problem):
         return self.get_id() in task_input
 
     def input_type(self):
-        return str
+        return list
 
     def check_answer(self, task_input, language):
-        if not self._answer:
+        if not self._answers:
             return None, None, None, 0
 
-        if not task_input[self.get_id()]:
+        if not task_input[self.get_id()][0]:
             return False, None, ["_wrong_answer"], 1
 
         try:
-            student_answer = MathProblem.parse_equation(task_input[self.get_id()])
-            correct_answer = MathProblem.parse_equation(self._answer)
+            student_answers = [MathProblem.parse_equation(eq) for eq in task_input[self.get_id()]]
+            correct_answers = [MathProblem.parse_equation(eq) for eq in self._answers]
+            unexpec_answers = [MathProblem.parse_equation(choice["answer"]) for choice in self._choices]
         except LaTeXParsingError as e:
             return False, None, ["_wrong_answer", "Parsing error: " + str(e)], 1
 
-        if self.is_equal(student_answer, correct_answer):
-            msg = self.gettext(language, self._success_message) or "_correct_answer"
-            return True, None, [msg], 0
-        else:
-            # Iterate on possibles student choices:
-            for choice in self._choices:
-                try:
-                    choice_answer = MathProblem.parse_equation(choice_answer)
-                    if self.is_equal(student_answer, choice_answer):
-                        msg = self.gettext(language, choice["feedback"])
-                        return False, None, [msg], 1
-                except LaTeXParsingError as e:
-                    return False, None, ["_wrong_answer", "Parsing error: " + str(e)], 1
-            # If not among choices, return the default error message
-            msg = self.gettext(language, self._error_message) or "_wrong_answer"
+        # Check for correct amount of answers
+        if not len(student_answers) == len(correct_answers):
+            msg = self.gettext(language, "Expected {} answer(s).".format(len(correct_answers)))
             return False, None, [msg], 1
+
+        # Check if an unexpected answer has been given
+        for i in range(0, len(self._choices)):
+            unexpec_answer = unexpec_answers[i]
+            for student_answer in student_answers:
+                if self.is_equal(student_answer, unexpec_answer):
+                    msg = self.gettext(language, self._choices[i]["feedback"])
+                    return False, None, [msg], 1
+
+        # Sort both student and correct answers array per their string representation
+        # Equal equations should have the same string representation
+        student_answers = sorted(student_answers, key=lambda eq: str(eq))
+        correct_answers = sorted(correct_answers, key=lambda eq: str(eq))
+
+        for i in range(0, len(correct_answers)):
+            if not self.is_equal(student_answers[i], correct_answers[i]):
+                msg = self.gettext(language, self._error_message) or "_wrong_answer"
+                return False, None, [msg], 1
+
+        msg = self.gettext(language, self._success_message) or "_correct_answer"
+        return True, None, [msg], 0
 
     @classmethod
     def parse_equation(cls, latex_str):
@@ -158,6 +168,8 @@ class MathProblem(Problem):
             problem_content["choices"] = [val for _, val in
                                           sorted(iter(problem_content["choices"].items()), key=lambda x: int(x[0]))
                                           if val["feedback"].strip()]
+        if "answers" in problem_content:
+            problem_content["answers"] = [val for _, val in problem_content["answers"].items()]
 
         for message in ["error_message", "success_message"]:
             if message in problem_content and problem_content[message].strip() == "":
