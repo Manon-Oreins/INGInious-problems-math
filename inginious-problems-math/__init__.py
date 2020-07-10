@@ -10,7 +10,7 @@ import json
 
 from sympy.parsing.latex import parse_latex
 from sympy.parsing.latex.errors import LaTeXParsingError
-from sympy import simplify, sympify, N
+from sympy import simplify, sympify, N, E
 
 from inginious.common.tasks_problems import Problem
 from inginious.frontend.task_problems import DisplayableProblem
@@ -108,8 +108,8 @@ class MathProblem(Problem):
             student_answers = [MathProblem.parse_equation(eq) for eq in task_input[self.get_id()]]
             correct_answers = [MathProblem.parse_equation(eq) for eq in self._answers]
             unexpec_answers = [MathProblem.parse_equation(choice["answer"]) for choice in self._choices]
-        except LaTeXParsingError as e:
-            return False, None, ["_wrong_answer", "Parsing error: " + str(e)], 1
+        except Exception as e:
+            return False, None, ["_wrong_answer", "Parsing error: \n\n .. code-block:: \n\n\t" + str(e).replace("\n", "\n\t")], 1
 
         # Check for correct amount of answers
         if not len(student_answers) == len(correct_answers):
@@ -141,17 +141,18 @@ class MathProblem(Problem):
     def parse_equation(cls, latex_str):
         # The \left and \right prefix are not supported by sympy (and useless for treatment)
         latex_str = re.sub("(\\\left|\\\\right)", "", latex_str)
-        return parse_latex(latex_str)
+        # We parse LaTeX one time, and then reparse to evaluate constants correctly
+        eq = parse_latex(latex_str)
+        # Here we add an alias "e" as the E=2.71...
+        return sympify(str(eq), locals={"e": E})
 
     def is_equal(self, eq1, eq2):
-        if eq1 == eq2:
-            return True
-        elif not simplify(eq1-eq2) or not simplify(sympify(str(eq1)) - sympify(str(eq2))):
+        if eq1 == eq2 or simplify(eq1) == simplify(eq2) or not simplify(eq1-eq2):
             return True
         elif self._tolerance:
-            return abs(N(sympify(str(eq1)) - sympify(str(eq2)))) < self._tolerance
+            return abs(N(eq1 - eq2)) < self._tolerance
         else:
-            return abs(N(sympify(str(eq1)) - sympify(str(eq2)))) == 0
+            return abs(N(eq1 - eq2)) == 0
 
     @classmethod
     def parse_problem(cls, problem_content):
