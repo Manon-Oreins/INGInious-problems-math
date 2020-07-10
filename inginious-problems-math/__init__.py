@@ -141,6 +141,8 @@ class MathProblem(Problem):
     def parse_equation(cls, latex_str):
         # The \left and \right prefix are not supported by sympy (and useless for treatment)
         latex_str = re.sub("(\\\left|\\\\right)", "", latex_str)
+        latex_str = re.sub("(\\\log_)(\w)(\()", "\\\log_{\\2}(", latex_str)
+        latex_str = re.sub("(\\\log_)(\w)(\w+)", "\\\log_{\\2}(\\3)", latex_str)
         # We parse LaTeX one time, and then reparse to evaluate constants correctly
         eq = parse_latex(latex_str)
         # Here we add an alias "e" as the E=2.71...
