@@ -9,6 +9,7 @@ import web
 import json
 
 from sympy.parsing.latex import parse_latex
+from sympy.printing.latex import latex
 from sympy.parsing.latex.errors import LaTeXParsingError
 from sympy import simplify, sympify, N, E
 
@@ -131,8 +132,9 @@ class MathProblem(Problem):
 
         for i in range(0, len(correct_answers)):
             if not self.is_equal(student_answers[i], correct_answers[i]):
-                msg = self.gettext(language, self._error_message) or "_wrong_answer"
-                return False, None, [msg], 1
+                msg = [self.gettext(language, self._error_message) or "_wrong_answer"]
+                msg += ["Not correct : :math:`{}`".format(latex(student_answers[i]))]
+                return False, None, msg, 1
 
         msg = self.gettext(language, self._success_message) or "_correct_answer"
         return True, None, [msg], 0
