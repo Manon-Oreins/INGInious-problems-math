@@ -83,7 +83,7 @@ class MathProblem(Problem):
     def __init__(self, task, problemid, content):
         Problem.__init__(self, task, problemid, content)
         self._header = content['header'] if "header" in content else ""
-        self._answers = content.get("answers", []) or [content.get("answer", "")] # retrocompat
+        self._answers = content.get("answers", []) or ([content.get("answer", "")] if content.get("answer", "") else []) # retrocompat
         self._tolerance = content.get("tolerance", None)
         self._hints = content.get("hints", None)
         self._error_message = content.get("error_message", None)
@@ -101,11 +101,8 @@ class MathProblem(Problem):
         return list
 
     def check_answer(self, task_input, language):
-        if not self._answers:
+        if not isinstance(self._answers, list):
             return None, None, None, 0
-
-        if not task_input[self.get_id()][0]:
-            return False, None, ["_wrong_answer"], 1
 
         try:
             student_answers = [MathProblem.parse_equation(eq) for eq in task_input[self.get_id()]]
@@ -147,7 +144,9 @@ class MathProblem(Problem):
         return parse_latex(latex_str)
 
     def is_equal(self, eq1, eq2):
-        if not simplify(eq1-eq2) or not simplify(sympify(str(eq1)) - sympify(str(eq2))):
+        if eq1 == eq2:
+            return True
+        elif not simplify(eq1-eq2) or not simplify(sympify(str(eq1)) - sympify(str(eq2))):
             return True
         elif self._tolerance:
             return abs(N(sympify(str(eq1)) - sympify(str(eq2)))) < self._tolerance
