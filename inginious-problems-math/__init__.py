@@ -11,7 +11,7 @@ import json
 from sympy.parsing.latex import parse_latex
 from sympy.printing.latex import latex
 from sympy.parsing.latex.errors import LaTeXParsingError
-from sympy import simplify, sympify, N, E
+from sympy import simplify, sympify, N, E, Equality
 
 from inginious.common.tasks_problems import Problem
 from inginious.frontend.task_problems import DisplayableProblem
@@ -153,6 +153,8 @@ class MathProblem(Problem):
     def is_equal(self, eq1, eq2):
         if not type(eq1) == type(eq2):
             return False
+        elif type(eq1) == Equality:
+            return eq1 == eq2 or simplify(eq1) == simplify(eq2)
         elif eq1 == eq2 or simplify(eq1) == simplify(eq2) or not simplify(eq1-eq2):
             return True
         elif self._tolerance:
