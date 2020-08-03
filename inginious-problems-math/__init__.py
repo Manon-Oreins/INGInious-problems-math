@@ -151,7 +151,9 @@ class MathProblem(Problem):
         return sympify(str(eq), locals={"e": E})
 
     def is_equal(self, eq1, eq2):
-        if eq1 == eq2 or simplify(eq1) == simplify(eq2) or not simplify(eq1-eq2):
+        if not type(eq1) == type(eq2):
+            return False
+        elif eq1 == eq2 or simplify(eq1) == simplify(eq2) or not simplify(eq1-eq2):
             return True
         elif self._tolerance:
             return abs(N(eq1 - eq2)) < self._tolerance
