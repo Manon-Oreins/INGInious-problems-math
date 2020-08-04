@@ -41,6 +41,9 @@ class StaticMockPage(object):
 
 
 class HintPage(INGIniousAuthPage):
+    def is_lti_page(self):
+        return self.user_manager.session_lti_info() is not None
+
     def POST_AUTH(self):
         data = web.input()
         username = self.user_manager.session_username()
@@ -49,11 +52,11 @@ class HintPage(INGIniousAuthPage):
         taskid = data.get("taskid", None)
 
         course = self.course_factory.get_course(courseid)
-        if not self.user_manager.course_is_open_to_user(course, username):
+        if not self.user_manager.course_is_open_to_user(course, username, self.is_lti_page()):
             return handle_course_unavailable(self.cp.app.get_homepath(), self.template_helper, self.user_manager, course)
 
         task = course.get_task(taskid)
-        if not self.user_manager.task_is_visible_by_user(task, username):
+        if not self.user_manager.task_is_visible_by_user(task, username, self.is_lti_page()):
             return self.template_helper.get_renderer().task_unavailable()
 
         problemid = data.get("problemid", "")

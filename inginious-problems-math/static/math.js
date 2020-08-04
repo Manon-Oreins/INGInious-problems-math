@@ -1,3 +1,5 @@
+var homepath = "";
+
 function load_input_math(submissionid, key, input) {
     var field = $("form#task input[name='" + key + "']");
     $("#math-fields-" + key).html("");
@@ -126,7 +128,7 @@ $( document ).ready(function() {
         var problemid = button.data('problemid');
 
         $.ajax({
-            url: '/plugins/math/hint',
+            url: homepath + '/plugins/math/hint',
             type: 'post',
             data: {courseid: courseid, taskid: taskid, problemid: problemid},
             success: function(response){
