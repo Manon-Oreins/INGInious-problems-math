@@ -1,4 +1,5 @@
 include LICENSE
 include README.md
-recursive-include inginious-problems-math/static *
-recursive-include inginious-problems-math/templates *
+recursive-include inginious_problems_math/static *
+recursive-include inginious_problems_math/templates *
+recursive-include inginious_problems_math/pages *
