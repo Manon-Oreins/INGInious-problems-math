@@ -10,14 +10,14 @@ import json
 
 from sympy.parsing.latex import parse_latex
 from sympy.printing.latex import latex
-from sympy.parsing.latex.errors import LaTeXParsingError
 from sympy import simplify, sympify, N, E, Equality
 
 from inginious.common.tasks_problems import Problem
 from inginious.frontend.task_problems import DisplayableProblem
 from inginious.frontend.parsable_text import ParsableText
-from inginious.frontend.pages.utils import INGIniousAuthPage
-from inginious.frontend.pages.course import handle_course_unavailable
+
+from inginious_problems_math.pages.hint import HintPage
+from inginious_problems_math.pages.answers import AnswersPage
 
 __version__ = "0.1.dev0"
 
@@ -39,47 +39,6 @@ class StaticMockPage(object):
     def POST(self, path):
         return self.GET(path)
 
-
-class HintPage(INGIniousAuthPage):
-    def is_lti_page(self):
-        return self.user_manager.session_lti_info() is not None
-
-    def POST_AUTH(self):
-        data = web.input()
-        username = self.user_manager.session_username()
-        language = self.user_manager.session_language()
-        courseid = data.get("courseid", None)
-        taskid = data.get("taskid", None)
-
-        course = self.course_factory.get_course(courseid)
-        if not self.user_manager.course_is_open_to_user(course, username, self.is_lti_page()):
-            return handle_course_unavailable(self.cp.app.get_homepath(), self.template_helper, self.user_manager, course)
-
-        task = course.get_task(taskid)
-        if not self.user_manager.task_is_visible_by_user(task, username, self.is_lti_page()):
-            return self.template_helper.get_renderer().task_unavailable()
-
-        problemid = data.get("problemid", "")
-        problems = task.get_problems()
-        hints = ""
-        for problem in problems:
-            if problem.get_id() == problemid:
-                hints = ParsableText(problem.gettext(language, problem._hints), "rst",
-                                    translation=problem.get_translation_obj(language))
-
-        if hints:
-            user_tasks = self.database.user_tasks.find_one({"username": username, "courseid": courseid,
-                                                            "taskid": taskid})
-            try:
-                state = json.loads(user_tasks.get("state", "{}"))
-            except:
-                state = {}
-
-            state.setdefault("hints", {})[problemid] = True
-            self.database.user_tasks.update_one({"username": username, "courseid": courseid,
-                                                 "taskid": taskid}, {"$set": {"state": json.dumps(state)}})
-
-        return hints
 
 class MathProblem(Problem):
     """Display an input box and check that the content is correct"""
@@ -105,20 +64,33 @@ class MathProblem(Problem):
         return list
 
     def check_answer(self, task_input, language):
+        try:
+            state = json.loads(task_input.get("@state", "{}"))
+            state = state.get(self.get_id(), "")
+        except:
+            state = ""
+
         if not isinstance(self._answers, list):
-            return None, None, None, 0
+            return None, None, None, 0, state
 
         try:
             student_answers = [MathProblem.parse_equation(eq) for eq in task_input[self.get_id()]]
             correct_answers = [MathProblem.parse_equation(eq) for eq in self._answers]
             unexpec_answers = [MathProblem.parse_equation(choice["answer"]) for choice in self._choices]
         except Exception as e:
-            return False, None, ["_wrong_answer", "Parsing error: \n\n .. code-block:: \n\n\t" + str(e).replace("\n", "\n\t")], 1
+            return False, None, ["_wrong_answer", "Parsing error: \n\n .. code-block:: \n\n\t" + str(e).replace("\n", "\n\t")], 1, state
 
         # Check for correct amount of answers
         if not len(student_answers) == len(correct_answers):
             msg = self.gettext(language, "Expected {} answer(s).".format(len(correct_answers)))
-            return False, None, [msg], 1
+            return False, None, [msg], 0, state
+
+        # Sort both student and correct answers array per their string representation
+        # Equal equations should have the same string representation
+        student_answers = sorted(student_answers, key=lambda eq: str(eq))
+        correct_answers = sorted(correct_answers, key=lambda eq: str(eq))
+
+        state = json.dumps([latex(answer) for answer in student_answers])
 
         # Check if an unexpected answer has been given
         for i in range(0, len(self._choices)):
@@ -126,21 +98,16 @@ class MathProblem(Problem):
             for student_answer in student_answers:
                 if self.is_equal(student_answer, unexpec_answer):
                     msg = self.gettext(language, self._choices[i]["feedback"])
-                    return False, None, [msg], 1
-
-        # Sort both student and correct answers array per their string representation
-        # Equal equations should have the same string representation
-        student_answers = sorted(student_answers, key=lambda eq: str(eq))
-        correct_answers = sorted(correct_answers, key=lambda eq: str(eq))
+                    return False, None, [msg], 0, state
 
         for i in range(0, len(correct_answers)):
             if not self.is_equal(student_answers[i], correct_answers[i]):
                 msg = [self.gettext(language, self._error_message) or "_wrong_answer"]
                 msg += ["Not correct : :math:`{}`".format(latex(student_answers[i]))]
-                return False, None, msg, 1
+                return False, None, msg, 0, state
 
         msg = self.gettext(language, self._success_message) or "_correct_answer"
-        return True, None, [msg], 0
+        return True, None, [msg], 0, state
 
     @classmethod
     def parse_equation(cls, latex_str):
@@ -223,13 +190,19 @@ class DisplayableMathProblem(MathProblem, DisplayableProblem):
         return DisplayableMathProblem.get_renderer(template_helper).math_edit_templates(key)
 
 
+def add_admin_menu(course): # pylint: disable=unused-argument
+    return 'math-answers', '<i class="fa fa-calculator fa-fw"></i>&nbsp; Math answers'
+
+
 def init(plugin_manager, course_factory, client, plugin_config):
     # TODO: Replace by shared static middleware and let webserver serve the files
     plugin_manager.add_page('/plugins/math/static/(.+)', StaticMockPage)
     plugin_manager.add_page('/plugins/math/hint', HintPage)
+    plugin_manager.add_page('/admin/([^/]+)/math-answers', AnswersPage)
     plugin_manager.add_hook("css", lambda: "/plugins/math/static/mathquill.css")
     plugin_manager.add_hook("css", lambda: "/plugins/math/static/matheditor.css")
     plugin_manager.add_hook("javascript_header", lambda: "/plugins/math/static/mathquill.min.js")
     plugin_manager.add_hook("javascript_header", lambda: "/plugins/math/static/math.js")
     plugin_manager.add_hook("javascript_header", lambda: "/plugins/math/static/matheditor.js")
+    plugin_manager.add_hook('course_admin_menu', add_admin_menu)
     course_factory.get_task_factory().add_problem_type(DisplayableMathProblem)

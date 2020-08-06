@@ -11,4 +11,4 @@ Math formulas INGInious problem type.
 In your ``configuration.yaml`` file, add the following plugin entry:
 
     plugins:
-      - plugin_module: "inginious-problems-math"
+      - plugin_module: "inginious_problems_math"
