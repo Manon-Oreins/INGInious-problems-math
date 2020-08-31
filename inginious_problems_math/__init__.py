@@ -8,6 +8,7 @@ import re
 import web
 import json
 
+from sympy.core import Number
 from sympy.parsing.latex import parse_latex
 from sympy.printing.latex import latex
 from sympy import simplify, sympify, N, E, Equality
@@ -121,6 +122,8 @@ class MathProblem(Problem):
         return sympify(str(eq), locals={"e": E})
 
     def is_equal(self, eq1, eq2):
+        if isinstance(eq1, Number) and isinstance(eq2, Number):
+            return abs(N(eq1 - eq2)) < self._tolerance if self._tolerance else abs(N(eq1 - eq2)) == 0
         if not type(eq1) == type(eq2):
             return False
         elif type(eq1) == Equality:
