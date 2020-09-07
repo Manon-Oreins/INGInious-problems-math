@@ -1,4 +1,4 @@
-$def with (task,inputId,header,hints)
+$def with (inputId,header,hints)
 
 $#
 $# This file is part of INGInious. See the LICENSE and the COPYRIGHTS files for
@@ -8,7 +8,7 @@ $#
 
 <div class="btn-group pull-right">
     $if hints:
-        <a type="button" class="btn btn-secondary" data-toggle="modal" data-target=".math_modal_$inputId" data-courseid="$task.get_course_id()" data-taskid="$task.get_id()" data-problemid="$inputId">$_("Hint")</a>
+        <a type="button" class="btn btn-secondary math-hint-btn" data-toggle="modal" data-target=".math_modal_$inputId" data-problemid="$inputId">$_("Hint")</a>
     <a type="button" class="btn btn-secondary" onclick="math_add_answer('$inputId', '')">$_("Add answer")</a>
 </div>
 

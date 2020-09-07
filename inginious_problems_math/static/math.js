@@ -123,8 +123,6 @@ function math_add_answer(pid, data) {
 $( document ).ready(function() {
     $(".math_modal").on('show.bs.modal', function (e) {
         var button = $(e.relatedTarget); // Button that triggered the modal
-        var courseid = button.data('courseid');
-        var taskid = button.data('taskid');
         var problemid = button.data('problemid');
 
         $.ajax({

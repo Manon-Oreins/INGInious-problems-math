@@ -44,8 +44,8 @@ class StaticMockPage(object):
 class MathProblem(Problem):
     """Display an input box and check that the content is correct"""
 
-    def __init__(self, task, problemid, content):
-        Problem.__init__(self, task, problemid, content)
+    def __init__(self, problemid, content, translations):
+        Problem.__init__(self, problemid, content, translations)
         self._header = content['header'] if "header" in content else ""
         self._answers = content.get("answers", []) or ([content.get("answer", "")] if content.get("answer", "") else []) # retrocompat
         self._tolerance = content.get("tolerance", None)
@@ -166,8 +166,8 @@ class MathProblem(Problem):
 class DisplayableMathProblem(MathProblem, DisplayableProblem):
     """ A displayable match problem """
 
-    def __init__(self, task, problemid, content):
-        MathProblem.__init__(self, task, problemid, content)
+    def __init__(self, problemid, content, translations):
+        MathProblem.__init__(self, problemid, content, translations)
 
     @classmethod
     def get_type_name(self, language):
@@ -182,7 +182,7 @@ class DisplayableMathProblem(MathProblem, DisplayableProblem):
         """ Show MatchProblem """
         header = ParsableText(self.gettext(language, self._header), "rst",
                               translation=self.get_translation_obj(language))
-        return str(DisplayableMathProblem.get_renderer(template_helper).math(self._task, self.get_id(), header, self._hints))
+        return str(DisplayableMathProblem.get_renderer(template_helper).math(self.get_id(), header, self._hints))
 
     @classmethod
     def show_editbox(cls, template_helper, key, language):
