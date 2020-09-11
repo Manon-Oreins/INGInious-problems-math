@@ -44,10 +44,10 @@ class StaticMockPage(object):
 class MathProblem(Problem):
     """Display an input box and check that the content is correct"""
 
-    def __init__(self, problemid, content, translations):
-        Problem.__init__(self, problemid, content, translations)
+    def __init__(self, problemid, content, translations, taskfs):
+        Problem.__init__(self, problemid, content, translations, taskfs)
         self._header = content['header'] if "header" in content else ""
-        self._answers = content.get("answers", []) or ([content.get("answer", "")] if content.get("answer", "") else []) # retrocompat
+        self._answers = list(content.get("answers", [])) or ([content.get("answer", "")] if content.get("answer", "") else []) # retrocompat
         self._tolerance = content.get("tolerance", None)
         self._hints = content.get("hints", None)
         self._error_message = content.get("error_message", None)
@@ -166,8 +166,8 @@ class MathProblem(Problem):
 class DisplayableMathProblem(MathProblem, DisplayableProblem):
     """ A displayable match problem """
 
-    def __init__(self, problemid, content, translations):
-        MathProblem.__init__(self, problemid, content, translations)
+    def __init__(self, problemid, content, translations, taskfs):
+        MathProblem.__init__(self, problemid, content, translations, taskfs)
 
     @classmethod
     def get_type_name(self, language):
