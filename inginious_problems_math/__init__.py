@@ -119,13 +119,13 @@ class MathProblem(Problem):
         # We parse LaTeX one time, and then reparse to evaluate constants correctly
         eq = parse_latex(latex_str)
         # Here we add an alias "e" as the E=2.71...
-        return sympify(str(eq), locals={"e": E})
+        return sympify(str(eq), locals={"e": E}, evaluate=False)
 
     def is_equal(self, eq1, eq2):
         if isinstance(eq1, Number) and isinstance(eq2, Number):
             return abs(N(eq1 - eq2)) < self._tolerance if self._tolerance else abs(N(eq1 - eq2)) == 0
         if not type(eq1) == type(eq2):
-            return False
+            return N(eq1) == N(eq2)
         elif type(eq1) == Equality:
             return eq1 == eq2 or simplify(eq1) == simplify(eq2)
         elif eq1 == eq2 or simplify(eq1) == simplify(eq2) or not simplify(eq1-eq2):
