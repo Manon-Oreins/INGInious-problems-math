@@ -26,7 +26,7 @@ class HintPage(INGIniousAuthPage):
             return handle_course_unavailable(self.cp.app.get_homepath(), self.template_helper, self.user_manager, course)
 
         task = course.get_task(taskid)
-        if not self.user_manager.task_is_visible_by_user(task, username, self.is_lti_page()):
+        if not self.user_manager.task_can_user_submit(task, username, None, self.is_lti_page()):
             return self.template_helper.get_renderer().task_unavailable()
 
         problemid = data.get("problemid", "")
