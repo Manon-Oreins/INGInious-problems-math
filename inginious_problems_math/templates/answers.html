@@ -1,56 +1,64 @@
-$def with (course, data, ParsableText)
+{# This file is part of INGInious. See the LICENSE and the COPYRIGHTS files for #}
+{#  more information about the licensing of this file. #}
 
-$#
-$# This file is part of INGInious. See the LICENSE and the COPYRIGHTS files for
-$# more information about the licensing of this file.
-$#
+{% extends "layout.html" %}
 
-$var title: $:course.get_name(user_manager.session_language()) - Contest settings
+{% block title %} {{course.get_name(user_manager.session_language()) }} - {{_("Math answers")}} {% endblock %}
 
-$var Column: $:template_helper.call('course_admin_menu',course=course,current='math-answers')
+{% block column %}
+{{ template_helper.call('course_admin_menu',course=course,current='math-answers') | safe }}
+{% endblock %}
 
-$def NavbarF():
+{% block navbar %}
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="$get_homepath()/course/$course.get_id()">$course.get_name(user_manager.session_language())</a></li>
-            <li class="breadcrumb-item"><a href="$get_homepath()/admin/$course.get_id()" title="Administration" data-toggle="tooltip" data-placement="bottom">
+            <li class="breadcrumb-item"><a href="{{get_homepath()}}/course/{{course.get_id()}}">{{course.get_name(user_manager.session_language())}}</a></li>
+            <li class="breadcrumb-item"><a href="{{get_homepath()}}/admin/{{course.get_id()}}" title="Administration" data-toggle="tooltip" data-placement="bottom">
                 <i class="fa fa-user-secret"></i></a></li>
             <li class="breadcrumb-item active"><a href="#"><i class="fa fa-calculator"></i> Math answers <span class="sr-only">(current)</span></a></li>
         </ol>
     </nav>
-$var Navbar: $:NavbarF()
+{% endblock %}
+
+{% block content %}
 
 <h2>Top math anwsers</h2>
 
 <div class="accordion" id="tasks_accordion">
-    $for index, taskid in enumerate(data):
+    {% for taskid in data %}
+        {% set index = loop.index %}
         <div class="card">
-            <div class="card-header" id="heading_$index">
+            <div class="card-header" id="heading_{{index}}">
                 <h2 class="mb-0">
-                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse_$index" aria-expanded="false" aria-controls="collapse_$index">
-                        $data[taskid]['task'].get_name(user_manager.session_language())
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse_{{index}}" aria-expanded="false" aria-controls="collapse_{{index}}">
+                        {{ data[taskid]['task'].get_name(user_manager.session_language()) }}
                     </button>
                 </h2>
             </div>
-            <div id="collapse_$index" class="collapse" aria-labelledby="heading_$index" data-parent="#tasks_accordion">
+            <div id="collapse_{{index}}" class="collapse" aria-labelledby="heading_{{index}}" data-parent="#tasks_accordion">
                 <div class="card-body">
-                    $for pid in data[taskid]['pid'].keys():
+                    {% for pid in data[taskid]['pid'].keys() %}
                         <p>
-                            $data[taskid]['pid'][pid].get_name(user_manager.session_language())
+                            {{ data[taskid]['pid'][pid].get_name(user_manager.session_language()) }}
                             <ol>
-                            $for item in data[taskid]['answers'][pid][:5]:
+                            {% for item in data[taskid]['answers'][pid][:5] %}
                                 <li>
-                                    Count : $item[1] <br/>
+                                    Count : {{item[1]}} <br/>
                                     Answers:
                                     <ul>
-                                        $for eq in item[0]:
-                                            <li>$:ParsableText(':math:`' + eq + '`')</li>
+                                        {% for eq in item[0] %}
+                                            <li>{{ ParsableText(':math:`' + eq + '`') | safe}}</li>
+                                        {% endfor %}
                                     </ul>
                                 </li>
+                            {% endfor %}
                             </ol>
                         </p>
+                    {% endfor %}
                 </div>
             </div>
         </div>
-
+    {% endfor %}
 </div>
+
+{% endblock %}

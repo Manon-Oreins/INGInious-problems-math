@@ -23,7 +23,7 @@ from inginious_problems_math.pages.answers import AnswersPage
 __version__ = "0.1.dev0"
 
 PATH_TO_PLUGIN = os.path.abspath(os.path.dirname(__file__))
-
+PATH_TO_TEMPLATES = os.path.join(PATH_TO_PLUGIN, "templates")
 
 class StaticMockPage(object):
     # TODO: Replace by shared static middleware and let webserver serve the files
@@ -173,24 +173,20 @@ class DisplayableMathProblem(MathProblem, DisplayableProblem):
     def get_type_name(self, language):
         return "math"
 
-    @classmethod
-    def get_renderer(cls, template_helper):
-        """ Get the renderer for this class problem """
-        return template_helper.get_custom_renderer(os.path.join(PATH_TO_PLUGIN, "templates"), False)
-
     def show_input(self, template_helper, language, seed):
         """ Show MatchProblem """
         header = ParsableText(self.gettext(language, self._header), "rst",
                               translation=self.get_translation_obj(language))
-        return str(DisplayableMathProblem.get_renderer(template_helper).math(self.get_id(), header, self._hints))
+        return template_helper.render("math.html", template_folder=PATH_TO_TEMPLATES, inputId=self.get_id(),
+                                      header=header, hints=self._hints)
 
     @classmethod
     def show_editbox(cls, template_helper, key, language):
-        return DisplayableMathProblem.get_renderer(template_helper).math_edit(key)
+        return template_helper.render("math_edit.html", template_folder=PATH_TO_TEMPLATES, key=key)
 
     @classmethod
     def show_editbox_templates(cls, template_helper, key, language):
-        return DisplayableMathProblem.get_renderer(template_helper).math_edit_templates(key)
+        return template_helper.render("math_edit_templates.html", template_folder=PATH_TO_TEMPLATES, key=key)
 
 
 def add_admin_menu(course): # pylint: disable=unused-argument
