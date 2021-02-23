@@ -4,18 +4,20 @@
 # more information about the licensing of this file.
 
 import json
-import web
 
+from flask import request
+from werkzeug.exceptions import Forbidden
 from inginious.frontend.pages.utils import INGIniousAuthPage
 from inginious.frontend.pages.course import handle_course_unavailable
 from inginious.frontend.parsable_text import ParsableText
+
 
 class HintPage(INGIniousAuthPage):
     def is_lti_page(self):
         return self.user_manager.session_lti_info() is not None
 
     def POST_AUTH(self):
-        data = web.input()
+        data = request.form
         username = self.user_manager.session_username()
         language = self.user_manager.session_language()
         courseid = data.get("courseid", None)
@@ -27,15 +29,15 @@ class HintPage(INGIniousAuthPage):
 
         task = course.get_task(taskid)
         if not self.user_manager.task_can_user_submit(task, username, None, self.is_lti_page()):
-            return self.template_helper.render("task_unavailable.html")
+            raise Forbidden(_("Task unavailable"))
 
         problemid = data.get("problemid", "")
         problems = task.get_problems()
         hints = ""
         for problem in problems:
             if problem.get_id() == problemid:
-                hints = ParsableText(problem.gettext(language, problem._hints), "rst",
-                                    translation=problem.get_translation_obj(language))
+                hints = str(ParsableText(problem.gettext(language, problem._hints), "rst",
+                                    translation=problem.get_translation_obj(language)))
 
         if hints:
             user_tasks = self.database.user_tasks.find_one({"username": username, "courseid": courseid,

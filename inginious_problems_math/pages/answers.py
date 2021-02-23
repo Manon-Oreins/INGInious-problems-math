@@ -14,6 +14,7 @@ import inginious_problems_math
 PATH_TO_PLUGIN = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)
 PATH_TO_TEMPLATES = os.path.join(PATH_TO_PLUGIN, "templates")
 
+
 class AnswersPage(INGIniousAdminPage):
     def GET_AUTH(self, courseid):  # pylint: disable=arguments-differ
         course, __ = self.get_course_and_check_rights(courseid, allow_all_staff=False)

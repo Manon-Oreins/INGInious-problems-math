@@ -5,9 +5,9 @@
 
 import os
 import re
-import web
 import json
 
+from flask import send_from_directory
 from sympy.core import Number
 from sympy.parsing.latex import parse_latex
 from sympy.printing.latex import latex
@@ -16,6 +16,7 @@ from sympy import simplify, sympify, N, E, Equality
 from inginious.common.tasks_problems import Problem
 from inginious.frontend.task_problems import DisplayableProblem
 from inginious.frontend.parsable_text import ParsableText
+from inginious.frontend.pages.utils import INGIniousPage
 
 from inginious_problems_math.pages.hint import HintPage
 from inginious_problems_math.pages.answers import AnswersPage
@@ -25,17 +26,10 @@ __version__ = "0.1.dev0"
 PATH_TO_PLUGIN = os.path.abspath(os.path.dirname(__file__))
 PATH_TO_TEMPLATES = os.path.join(PATH_TO_PLUGIN, "templates")
 
-class StaticMockPage(object):
-    # TODO: Replace by shared static middleware and let webserver serve the files
-    def GET(self, path):
-        if not os.path.abspath(PATH_TO_PLUGIN) in os.path.abspath(os.path.join(PATH_TO_PLUGIN, path)):
-            raise web.notfound()
 
-        try:
-            with open(os.path.join(PATH_TO_PLUGIN, "static", path), 'rb') as file:
-                return file.read()
-        except:
-            raise web.notfound()
+class StaticMockPage(INGIniousPage):
+    def GET(self, path):
+        return send_from_directory(os.path.join(PATH_TO_PLUGIN, "static"), path)
 
     def POST(self, path):
         return self.GET(path)
@@ -195,9 +189,9 @@ def add_admin_menu(course): # pylint: disable=unused-argument
 
 def init(plugin_manager, course_factory, client, plugin_config):
     # TODO: Replace by shared static middleware and let webserver serve the files
-    plugin_manager.add_page('/plugins/math/static/(.+)', StaticMockPage)
-    plugin_manager.add_page('/plugins/math/hint', HintPage)
-    plugin_manager.add_page('/admin/([^/]+)/math-answers', AnswersPage)
+    plugin_manager.add_page('/plugins/math/static/<path:path>', StaticMockPage.as_view('mathstaticpage'))
+    plugin_manager.add_page('/plugins/math/hint', HintPage.as_view('mathhintpage'))
+    plugin_manager.add_page('/admin/<courseid>/math-answers', AnswersPage.as_view('mathanswerspage'))
     plugin_manager.add_hook("css", lambda: "/plugins/math/static/mathquill.css")
     plugin_manager.add_hook("css", lambda: "/plugins/math/static/matheditor.css")
     plugin_manager.add_hook("javascript_header", lambda: "/plugins/math/static/mathquill.min.js")
