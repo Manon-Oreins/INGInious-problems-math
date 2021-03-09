@@ -11,7 +11,7 @@ from flask import send_from_directory
 from sympy.core import Number
 from sympy.parsing.latex import parse_latex
 from sympy.printing.latex import latex
-from sympy import simplify, sympify, N, E, Equality
+from sympy import simplify, sympify, N, E, pi, Equality
 
 from inginious.common.tasks_problems import Problem
 from inginious.frontend.task_problems import DisplayableProblem
@@ -107,13 +107,15 @@ class MathProblem(Problem):
     @classmethod
     def parse_equation(cls, latex_str):
         # The \left and \right prefix are not supported by sympy (and useless for treatment)
-        latex_str = re.sub("(\\\left|\\\\right)", "", latex_str)
+        latex_str = re.sub("(\\\left|\\\right)", "", latex_str)
         latex_str = re.sub("(\\\log_)(\w)(\(|\^)", "\\\log_{\\2}\\3", latex_str)
         latex_str = re.sub("(\\\log_)(\w)(\w+)", "\\\log_{\\2}(\\3)", latex_str)
-        # We parse LaTeX one time, and then reparse to evaluate constants correctly
-        eq = parse_latex(latex_str)
-        # Here we add an alias "e" as the E=2.71...
-        return sympify(str(eq), locals={"e": E}, evaluate=False)
+        latex_str = re.sub(r'(\w)_(\w)(\w+)', r'\1_{\2}\3', latex_str) #x_ab means x_{a}b but x_{ab} correclty means x_{ab}
+        latex_str = re.sub(r'pi', r'\\pi', latex_str) #translates "pi" into the pi symbol (otherwise it's translated into p*i)
+        eq = parse_latex(latex_str).subs([("e", "E"), ("pi", pi)]) #add general constants
+        return eq
+
+
 
     def is_equal(self, eq1, eq2):
         if isinstance(eq1, Number) and isinstance(eq2, Number):
