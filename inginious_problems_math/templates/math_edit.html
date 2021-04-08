@@ -1,12 +1,22 @@
 {# This file is part of INGInious. See the LICENSE and the COPYRIGHTS files for #}
 {#  more information about the licensing of this file. #}
 
+
+<div class="form-group row">
+    <label for="button-PID" class="col-sm-2 control-label">{{ _("Problem type") }}</label>
+    <div class="col-sm-10">
+        <button type="button" id="button-PID" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#Modal-PID" >{{ _(problem_type) }}</button>
+    </div>
+</div>
+
+
 <div class="form-group row">
     <label for="header-PID" class="col-sm-2 control-label">{{_("Context")}}</label>
     <div class="col-sm-10">
         <textarea id="header-PID" class="form-control" name="problem[PID][header]"></textarea>
     </div>
 </div>
+
 <div class="form-group row">
     <label for="hints-PID" class="col-sm-2 control-label">{{_("Hints")}}</label>
     <div class="col-sm-10">
@@ -30,18 +40,23 @@
                   placeholder="{{_('An optional error message')}}"></textarea>
     </div>
 </div>
-<div class="form-group row">
-    <label for="tolerance-PID" class="col-sm-2 control-label">{{_("Tolerance")}}</label>
-    <div class="col-sm-10">
-        <input type="text" class="form-control" id="tolerance-PID" name="problem[PID][tolerance]" placeholder="0.01"/>
+
+{% if (problem_type == "math") %}
+    <div class="form-group row">
+        <label for="tolerance-PID" class="col-sm-2 control-label">{{_("Tolerance")}}</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="tolerance-PID" name="problem[PID][tolerance]" placeholder="0.01"/>
+        </div>
     </div>
-</div>
+{% endif %}
+
+
 <div class="form-group row">
     <div class="col-sm-12">
         <h4 style="text-align: center">{{_("Expected answers")}}</h4>
         <div id="answers-PID" class="mb-3">
         </div>
-        <button class="btn btn-info btn-sm btn-block" type="button" onclick="math_create_answer('PID','')">
+        <button class="btn btn-info btn-sm btn-block" type="button" onclick="{{problem_type}}_create_answer('PID','')">
             <i class="fa fa-plus"></i> {{_("Add new expected answer")}}
         </button>
     </div>
@@ -58,3 +73,30 @@
 
     </div>
 </div>
+
+
+<!-- Modal -->
+<div id="Modal-PID" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Help and documentation</h4>
+      </div>
+      <div class="modal-body">
+          <Text> {{"Problem type: " + problem_type}}</Text>
+          <pre><Text>{{problem_type_info}}</Text></pre>
+          <Text> {{ "General Remarks:" }}</Text>
+          <pre><Text>{{general_remark}}</Text></pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
