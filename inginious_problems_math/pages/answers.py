@@ -9,7 +9,7 @@ from operator import itemgetter
 
 from inginious.frontend.pages.course_admin.utils import INGIniousAdminPage
 from inginious.frontend.parsable_text import ParsableText
-import inginious_problems_math
+from inginious_problems_math.math_problem import MathProblem
 
 PATH_TO_PLUGIN = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.pardir)
 PATH_TO_TEMPLATES = os.path.join(PATH_TO_PLUGIN, "templates")
@@ -23,7 +23,7 @@ class AnswersPage(INGIniousAdminPage):
         for taskid, task in tasks.items():
             problems = task.get_problems()
             for problem in problems:
-                if isinstance(problem, inginious_problems_math.MathProblem):
+                if isinstance(problem, MathProblem):
                     data.setdefault(taskid, {})["task"] = task
                     data[taskid].setdefault("pid", {})[problem.get_id()] = problem
 

@@ -38,9 +38,18 @@ function studio_init_template_math(well, pid, problem)
         math_create_choice(pid, elem);
     });
 
-    jQuery.each(problem["answers"], function(index, elem) {
-        math_create_answer(pid, elem);
-    });
+    if (problem.type == "math")
+        jQuery.each(problem["answers"], function(index, elem) {
+            math_create_answer(pid, elem);
+        });
+    else if (problem.type == "math_interval")
+        jQuery.each(problem["answers"], function(index, elem) {
+            math_interval_create_answer(pid, elem);
+        });
+    else if (problem.type == "math_matrix")
+        jQuery.each(problem["answers"], function(index, elem) {
+            math_matrix_create_answer(pid, elem);
+        });
 }
 
 function load_feedback_math(key, content) {
@@ -78,14 +87,14 @@ function math_delete_choice(pid, choice)
     $('#choice-' + choice + '-' + pid).detach();
 }
 
-function math_create_answer(pid, choice_data) {
+function math_create_answer(pid, choice_data, type="math") {
     var well = $(studio_get_problem(pid));
 
     var index = 0;
     while($('#answer-' + index + '-' + pid).length != 0)
         index++;
 
-    var row = $("#subproblem_math_answer").html();
+    var row = $("#subproblem_"+type+"_answer").html();
     var new_row_content = row.replace(/PID/g, pid).replace(/CHOICE/g, index);
     var new_row = $("<div></div>").attr('id', 'answer-' + index + '-' + pid).html(new_row_content);
     $("#answers-" + pid, well).append(new_row);
@@ -137,3 +146,45 @@ $( document ).ready(function() {
         });
     })
 });
+
+/////////////////////////////////////////////////////////////////////////////////
+// MATH MATRIX //////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
+function load_input_math_matrix(submissionid, key, input) {
+    load_input_math(submissionid, key, input)
+}
+
+function load_feedback_math_matrix(key, content) {
+    load_feedback_math(key,content)
+}
+
+function studio_init_template_math_matrix(well, pid, problem)
+{
+    return studio_init_template_math(well, pid, problem)
+}
+
+function math_matrix_create_answer(pid, choice_data) {
+    return math_create_answer(pid,choice_data, "math_matrix")
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+// MATH INTERVAL ////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
+function load_input_math_interval(submissionid, key, input) {
+    load_input_math(submissionid, key, input)
+}
+
+function load_feedback_math_interval(key, content) {
+    load_feedback_math(key,content)
+}
+
+function studio_init_template_math_interval(well, pid, problem)
+{
+    return studio_init_template_math(well, pid, problem)
+}
+
+function math_interval_create_answer(pid, choice_data) {
+    return math_create_answer(pid, choice_data, "math_interval")
+}
