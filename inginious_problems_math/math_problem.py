@@ -128,8 +128,8 @@ class MathProblem(Problem):
         latex_str = re.sub("(\\\log_)(\w)(\w+)", "\\\log_{\\2}(\\3)", latex_str)
         latex_str = re.sub(r'(\w)_(\w)(\w+)', r'\1_{\2}\3', latex_str) #x_ab means x_{a}b but x_{ab} correclty means x_{ab}
         #general constants: always use i for imaginary constant, e for natural logarithm basis and \pi (or the symbol from toolbox) for pi
-        eq = parse_latex(latex_str).subs([("e", E), ("i", I), ("pi", pi)])
-        return sympify(eq)
+        eq = sympify(parse_latex(latex_str).subs([("e", E), ("i", I), ("pi", pi)]))
+        return simplify(eq)
 
     def is_equal(self, eq1, eq2):
         """Compare answers"""
