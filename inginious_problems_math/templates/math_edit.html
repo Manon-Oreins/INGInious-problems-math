@@ -5,7 +5,7 @@
 <div class="form-group row">
     <label for="button-PID" class="col-sm-2 control-label">{{ _("Problem type") }}</label>
     <div class="col-sm-10">
-        <button type="button" id="button-PID" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#Modal-PID" >{{ _(problem_type) }}</button>
+        <button type="button" id="button-PID" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#Modal-{{problem_type}}-PID" >{{ _(friendly_type) }}</button>
     </div>
 </div>
 
@@ -76,7 +76,7 @@
 
 
 <!-- Modal -->
-<div id="Modal-PID" class="modal fade" role="dialog">
+<div id="Modal-{{problem_type}}-PID" class="modal fade" role="dialog">
   <div class="modal-dialog">
 
     <!-- Modal content-->
@@ -85,10 +85,7 @@
         <h4 class="modal-title">Help and documentation</h4>
       </div>
       <div class="modal-body">
-          <Text> {{"Problem type: " + problem_type}}</Text>
-          <pre><Text>{{problem_type_info}}</Text></pre>
-          <Text> {{ "General Remarks:" }}</Text>
-          <pre><Text>{{general_remark}}</Text></pre>
+        {% include ("info_" + problem_type +".html") %}
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

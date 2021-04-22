@@ -1,0 +1,41 @@
+{# This file is part of INGInious. See the LICENSE and the COPYRIGHTS files for #}
+{#  more information about the licensing of this file. #}
+
+<text> {{_("Problem type: {}".format(friendly_type))}}</text>
+<pre><text>{{_(
+"This problem type is designed for intervals
+such as [0,2]∪[5,∞).
+If you want an equation or a matrix...
+Please refer to other problem types.
+
+Notes:
+The [] symbols represent inclusion and ()
+symbols represent exclusion.
+As a convention, we advise to always
+exclude infinity.
+
+It is advised to only ask for a single answer for this
+problem type. If you want, for example, 2 domains for 2
+different functions, please create two subproblems."
+)}}</text></pre>
+
+<text> {{ _("General Remarks:") }}</text>
+<pre><text>{{_(
+"e always represents the basis of natural logarithms.
+i always represents the imaginary constant.
+Do not use these letters to represent variables.
+
+log means log base 10.
+ln means natural logarithm.
+log_a means log with base a.
+
+Decimals are represented using .
+Separations are represented using ,
+
+When a letter is followed by an opening parenthesis,
+it is interpreted as \"function of...\"
+For example, x(2y+3) means x evaluated at 2y+3
+If you want a multiplication instead,
+use x*(2y+3) or (2y+3)x.
+This helps differentiate variables and functions."
+)}}</text></pre>

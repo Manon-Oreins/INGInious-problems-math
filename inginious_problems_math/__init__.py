@@ -43,5 +43,3 @@ def init(plugin_manager, course_factory, client, plugin_config):
     course_factory.get_task_factory().add_problem_type(DisplayableMathProblem)
     course_factory.get_task_factory().add_problem_type(DisplayableMathMatrixProblem)
     course_factory.get_task_factory().add_problem_type(DisplayableMathIntervalProblem)
-
-

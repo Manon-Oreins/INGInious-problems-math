@@ -13,34 +13,9 @@ from inginious.frontend.parsable_text import ParsableText
 
 PATH_TO_PLUGIN = os.path.abspath(os.path.dirname(__file__))
 PATH_TO_TEMPLATES = os.path.join(PATH_TO_PLUGIN, "templates")
-__version__ = "0.1.dev0"
-math_format = "expression: 5x+3  equation: x=y+3"
+math_format = "expression: 5x+3  equation: x=y+3  inequation: x<2y+1"
 problem_type = "math"
-math_problem_info = "This problem type is designed to allow many types \n" \
-                    "of mathematical answers format. Including: \n" \
-                    "Mathematical expressions: 5x+3 \n" \
-                    "Mumerical values with tolerance: 88.91 \n" \
-                    "Equations: y=3x\n" \
-                    "Inequalities: x<5+y \n" \
-                    "If you want to encode a vector, a matrix, \n" \
-                    "or some intervals, please refer to other \n" \
-                    "problem types.\n" \
-                    "Note: If you use tolerance, it is expressed as \n" \
-                    "absolute value, not relative."
 
-general_remark = "e always represents the basis of natural logarithms \n" \
-                "i always represents the imaginary constant \n" \
-                "Do not use these letters to represent variables \n" \
-                "log means log base 10 \n" \
-                "ln means natural logarithm \n" \
-                "log_a means log with base a \n" \
-                ". represents the decimal and , represents a separation\n" \
-                "When a letter is followed by an opening parenthesis,\n" \
-                "it is interpreted as \"function of...\" \n" \
-                "For example, x(2y+3) means x evaluted at 2y+3 \n" \
-                "If you want a multiplication instead, use x*(2y+3)\n" \
-                "or (2y+3)x. \n" \
-                "This helps differentiate variables and functions."
 
 class MathProblem(Problem):
     """Display an input box and check that the content is correct"""
@@ -75,9 +50,9 @@ class MathProblem(Problem):
         if not isinstance(self._answers, list):
             return None, None, None, 0, state
         try:
-            student_answers = [self.parse_equation(eq) for eq in task_input[self.get_id()]]
-            correct_answers = [self.parse_equation(eq) for eq in self._answers]
-            unexpec_answers = [self.parse_equation(choice["answer"]) for choice in self._choices]
+            student_answers = [self.parse_answer(eq) for eq in task_input[self.get_id()]]
+            correct_answers = [self.parse_answer(eq) for eq in self._answers]
+            unexpec_answers = [self.parse_answer(choice["answer"]) for choice in self._choices]
         except Exception as e:
             return False, None, ["_wrong_answer", "Parsing error: \n\n .. code-block:: \n\n\t" + str(e).replace("\n", "\n\t")], 1, state
 
@@ -116,12 +91,12 @@ class MathProblem(Problem):
         message = "Expected {} answer(s)".format(len(correct_answer))
         return [correct_len, message]
 
-
     def sort(self, answers):
         """Sort the answers based on alphabetical order"""
         return sorted(answers, key=lambda eq: str(eq))
 
-    def parse_equation(cls, latex_str):
+    @classmethod
+    def parse_answer(cls, latex_str):
         # The \left and \right prefix are not supported by sympy (and useless for treatment)
         latex_str = re.sub("(\\\left|\\\right)", "", latex_str)
         latex_str = re.sub("(\\\log_)(\w)(\(|\^)", "\\\log_{\\2}\\3", latex_str)
@@ -199,8 +174,8 @@ class DisplayableMathProblem(MathProblem, DisplayableProblem):
                                       header=header, hints=self._hints, format=format)
 
     @classmethod
-    def show_editbox(cls, template_helper, key, language, problem_type="math", problem_type_info=math_problem_info):
-        return template_helper.render("math_edit.html", template_folder=PATH_TO_TEMPLATES, key=key, problem_type_info=problem_type_info, problem_type=problem_type, general_remark=general_remark)
+    def show_editbox(cls, template_helper, key, language, problem_type="math", friendly_type="math"):
+        return template_helper.render("math_edit.html", template_folder=PATH_TO_TEMPLATES, key=key, problem_type=problem_type, friendly_type=friendly_type)
 
     @classmethod
     def show_editbox_templates(cls, template_helper, key, language, format=math_format):
