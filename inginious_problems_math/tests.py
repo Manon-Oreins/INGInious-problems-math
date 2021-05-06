@@ -3,10 +3,11 @@ import unittest
 import math
 import sys
 
-from sympy import simplify, sympify, N, E, pi, Equality, Interval, Matrix
+from sympy import simplify, sympify, N, E, pi, Equality, Interval, Matrix, FiniteSet, ConditionSet, EmptySet, S, Symbol
 from inginious_problems_math.math_problem import MathProblem
 from inginious_problems_math.math_interval import MathIntervalProblem
 from inginious_problems_math.math_matrix import MathMatrixProblem
+from inginious_problems_math.math_set import MathSetProblem
 
 
 class TestParseAnswer(unittest.TestCase):
@@ -203,7 +204,52 @@ class TestParseAnswer(unittest.TestCase):
         self.assertEqual(MathMatrixProblem.parse_answer("\\frac{2x}{(5-2)x}+\\frac{x}{\\frac{6x}{2}},0:0,1"), Matrix([[1, 0], [0, 1]]))
         self.assertEqual(MathMatrixProblem.parse_answer("1,0,0:0,1,0:0,0,1"), Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]]))
 
+    def test_set_explicit(self):
+        self.assertEqual(MathSetProblem.parse_answer("{1, 2, 3}"), FiniteSet(1, 2, 3))
+        self.assertEqual(MathSetProblem.parse_answer("{1, 1+1, 3}"), FiniteSet(1, 2, 3))
+        self.assertEqual(MathSetProblem.parse_answer("{x, 2, 3}"), FiniteSet("x", 2, 3))
+        self.assertEqual(MathSetProblem.parse_answer("{x, 2x, 3}"), FiniteSet("x", "2*x", 3))
+        self.assertEqual(MathSetProblem.parse_answer("{x, 2x, 3}"), FiniteSet("x", "x*2", 3))
+        self.assertEqual(MathSetProblem.parse_answer("{x, 2x, 3x}"), FiniteSet("x", "x*2", "3*x"))
+        self.assertEqual(MathSetProblem.parse_answer("{3, 1, 2}"), FiniteSet(1, 2, 3))
+        self.assertEqual(MathSetProblem.parse_answer("{1, 2, 3}\\cup{4,5,6}"), FiniteSet(1, 2, 3, 4, 5, 6))
+        self.assertEqual(MathSetProblem.parse_answer("{1, 2, 3}\\cup{3,4,5}"), FiniteSet(1, 2, 3, 4, 5))
+        self.assertEqual(MathSetProblem.parse_answer("{1, 2, 2+1}\\cup{3,4,5}"), FiniteSet(1, 2, 3, 4, 5))
+        self.assertEqual(MathSetProblem.parse_answer("{1, 2, 2+1}\\cup{3,4,2+1+2}"), FiniteSet(1, 2, 3, 4, 5))
+        self.assertEqual(MathSetProblem.parse_answer("{4, 5, 6}\\cup{1,2,3}"), FiniteSet(1, 2, 3, 4, 5, 6))
+        self.assertEqual(MathSetProblem.parse_answer("{1, 2, 3}\\cup{4, 5}\\cup{6,7}"), FiniteSet(1, 2, 3, 4, 5, 6, 7))
+        self.assertEqual(MathSetProblem.parse_answer("{1, 2, 3}\\cup{4, 5}\\cap{6,7}"), EmptySet)
+        self.assertEqual(MathSetProblem.parse_answer("{1, 2, 3}\\cap{1,2}"), FiniteSet(1, 2))
+        self.assertEqual(MathSetProblem.parse_answer("{1, 2, 3}\\cap{1,2}\\cup{3}"), FiniteSet(1, 2, 3))
+        self.assertEqual(MathSetProblem.parse_answer("{1, 2, 3}\\cap{1,2}\\cup{3}"), FiniteSet(1, 2, 3))
+        self.assertEqual(MathSetProblem.parse_answer("{1, 2, 3}\\cap{1,2,3}"), FiniteSet(1, 2, 3))
+        self.assertEqual(MathSetProblem.parse_answer("{1, 2}\\cup{2,3}\\cap{1,2}\\cup{3}"), FiniteSet(1, 2, 3))
+        self.assertEqual(MathSetProblem.parse_answer("{1, 2}\\cup{2,3}\\cup{1,2}\\cup{3}"), FiniteSet(1, 2, 3))
+        self.assertEqual(MathSetProblem.parse_answer("{1, 2}\\cup{2,3}\\cap{1,2}\\cup{3, 4, 5}"), FiniteSet(1, 2, 3))
+        self.assertEqual(MathSetProblem.parse_answer("{1, 2}\\cap{2,3}\\cap{1,2}\\cap{2, 3, 4, 5}"), FiniteSet(2))
+        self.assertEqual(MathSetProblem.parse_answer("{1, 2}\\cap{2,3}\\cap{1,2}\\cap{3, 4, 5}"), EmptySet)
+        self.assertEqual(MathSetProblem.parse_answer("{1, 2}\\cup{2,3}\\cap{1,2}\\cap{2, 3, 4, 5}"), FiniteSet(2))
 
+
+    def test_set_implicit(self):
+        x = Symbol('x')
+        self.assertEqual(MathSetProblem.parse_answer("{x|x<5|N}"), ConditionSet(x, x < 5, S.Naturals))
+        self.assertEqual(MathSetProblem.parse_answer("{x|x<\\frac{10}{2}|N}"), ConditionSet(x, x < 5, S.Naturals))
+        self.assertEqual(MathSetProblem.parse_answer("{x|x<5|Z}"), ConditionSet(x, x < 5, S.Integers))
+        self.assertEqual(MathSetProblem.parse_answer("{x|x<5|Z+}"), ConditionSet(x, x < 5, S.Naturals0))
+        self.assertEqual(MathSetProblem.parse_answer("{x|x<5|Z-}"), ConditionSet(x, x < 5, S.Integers-S.Naturals))
+        self.assertEqual(MathSetProblem.parse_answer("{x|x<5|R}"), ConditionSet(x, x < 5, S.Reals))
+        self.assertEqual(MathSetProblem.parse_answer("{x|x<5|Q}"), ConditionSet(x, x < 5, S.Rationals))
+        self.assertEqual(MathSetProblem.parse_answer("{x|(x<5)\\&(x>1)|N}"), ConditionSet(x, (x < 5) & (x > 1), S.Naturals))
+        self.assertEqual(MathSetProblem.parse_answer("{x|(x>1)\\&(x<5)|N}"), ConditionSet(x, (x < 5) & (x > 1), S.Naturals))
+        self.assertEqual(MathSetProblem.parse_answer("{x|(x>1)\\&(x<\\frac{10}{2})|N}"), ConditionSet(x, (x < 5) & (x > 1), S.Naturals))
+        self.assertEqual(MathSetProblem.parse_answer("{x|(x>1)\\&(x<4+1)|N}"), ConditionSet(x, (x < 5) & (x > 1), S.Naturals))
+        self.assertNotEqual(MathSetProblem.parse_answer("{x|(x>1)\\&(x<4+1)|N}"), ConditionSet(x, (x < 5) & (x > 1), S.Reals))
+        self.assertEqual(MathSetProblem.parse_answer("{x|x<5|{1,2,3,4,5}}"), ConditionSet(x, x < 5, {1,2,3,4,5}))
+        self.assertEqual(MathSetProblem.parse_answer("{x|x<5|{1,2,3,4,5}}"), FiniteSet(1,2,3,4))
+        self.assertNotEqual(MathSetProblem.parse_answer("{x|x<5|{1,2,3,4,5}}"), FiniteSet(1,2,3,4,5))
+        self.assertEqual(MathSetProblem.parse_answer("{x|x^2<25|{1,2,3,4,5}}"), FiniteSet(1,2,3,4))
+        self.assertEqual(MathSetProblem.parse_answer("{x|(x>1)\\&(x^2<25)|{0,1,2,3,4,5,6}}"), FiniteSet(2,3,4))
 
 
 class TestIsEqual(unittest.TestCase):
@@ -300,6 +346,45 @@ class TestIsEqual(unittest.TestCase):
         self.assertTrue(test_instance.is_equal(MathMatrixProblem.parse_answer("1,\\pi:0,0"), MathMatrixProblem.parse_answer("1,2\\pi-\\pi:0,0")))
         self.assertTrue(test_instance.is_equal(MathMatrixProblem.parse_answer("\\frac{\\sqrt{3}}{3},0:0,0"), MathMatrixProblem.parse_answer("\\frac{1}{\\sqrt{3}},0:0,0")))
 
+    def test_is_equal_set_explicit(self):
+        test_instance = MathSetProblem("fake_id", {"fake_content": 5}, "french", "fake_taskf")
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{1,2,3}"), MathSetProblem.parse_answer("{3,2,1}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{1,2,3}"), MathSetProblem.parse_answer("{2+1,2,1}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{1,2,3}"), MathSetProblem.parse_answer("{1+1+1,1+1,1}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{1,2,3}"), MathSetProblem.parse_answer("{1,2}\cup{2,3}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{1,2,3}"), MathSetProblem.parse_answer("{1,2,3}\cap{1,2,3,4,5,6,7,8,9,10}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{1,2,3}"), MathSetProblem.parse_answer("{1,2}\cup{2,3}\cap{1,2}\cup{3,4}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{1,2,3}"), MathSetProblem.parse_answer("{1,2,3+x-x}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x,2x,3x}"), MathSetProblem.parse_answer("{x,x+x,2x+x}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x_1,x_2,x_3}"), MathSetProblem.parse_answer("{1x_1,x_2,2x_3-x_3}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x_12,x_2,x_3}"), MathSetProblem.parse_answer("{2x_1,x_2,2x_3-x_3}")))
+        self.assertFalse(test_instance.is_equal(MathSetProblem.parse_answer("{x_{12},x_2,x_3}"), MathSetProblem.parse_answer("{2x_1,x_2,2x_3-x_3}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x,2x,3x}"), MathSetProblem.parse_answer("{x,2x,3x}\cup{5x}\cap{x,2x,2x+x}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x,2x,3x}"), MathSetProblem.parse_answer("{x,2x,3x}\cup{5x}\cap{x,2x}\cup{x+x+x}")))
+
+    def test_is_equal_set_implicit(self):
+        test_instance = MathSetProblem("fake_id", {"fake_content": 5}, "french", "fake_taskf")
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x|x<5|N}"), MathSetProblem.parse_answer("{x|x<4+1|N}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x|x<\\frac{10}{2}|N}"), MathSetProblem.parse_answer("{x|x<5|N}")))
+        self.assertFalse(test_instance.is_equal(MathSetProblem.parse_answer("{x|x>5|N}"), MathSetProblem.parse_answer("{x|x<5|N}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x|x<5|{1,2,3,4,5}}"), MathSetProblem.parse_answer("{1,2,3,4}")))
+        self.assertFalse(test_instance.is_equal(MathSetProblem.parse_answer("{x|x>5|R}"), MathSetProblem.parse_answer("{x|x>5|N}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x|x<5|{1,2,3,4,5}}"), MathSetProblem.parse_answer("{y|y<5|{1,2,3,4,5}}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x|x>1+4|N}"), MathSetProblem.parse_answer("{x|x>5|N}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x|x\ge5|{4,5,6}}"), MathSetProblem.parse_answer("{5,6}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x|x\ge5|{4,5,6}}"), MathSetProblem.parse_answer("{x|x\ge4+1|{4,5,6}}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x|x\le5|{4,5,6}}"), MathSetProblem.parse_answer("{4,5}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x|2x\le10|N}"), MathSetProblem.parse_answer("{x|x\le5|N}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x|x^2\le25|{1,2,3,4,5,6,7,8,9,10}}"), MathSetProblem.parse_answer("{x|x\le5|{1,2,3,4,5}}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x|x^2\le25|{1,2,3,4,5,6,7,8,9,10}}"), MathSetProblem.parse_answer("{1,2,3,4,5}")))
+        self.assertFalse(test_instance.is_equal(MathSetProblem.parse_answer("{x|x>5|N}"), MathSetProblem.parse_answer("{x|x>5|R}")))
+        self.assertFalse(test_instance.is_equal(MathSetProblem.parse_answer("{x|x>5|N}"), MathSetProblem.parse_answer("{x|x>5|Q}")))
+        self.assertFalse(test_instance.is_equal(MathSetProblem.parse_answer("{x|x<5|N}"), MathSetProblem.parse_answer("{x|x<5|Z+}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x|(x<5)|N}"), MathSetProblem.parse_answer("{x|x<4+1|N}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x|(x<5)\\&(x>3)|{1,2,3,4,5}}"), MathSetProblem.parse_answer("{4}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x|(x<5)\\&(x>3)|{1,2,3,4,5}}"), MathSetProblem.parse_answer("{x|(x>3)\\&(x<5)|{1,2,3,4,5}}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x|(x<5)\\&(x>3)|N}"), MathSetProblem.parse_answer("{x|(x>3)\\&(x<5)|N}")))
+        self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x|(x<4+1)\\&(x>\\frac{6}{2})|N}"), MathSetProblem.parse_answer("{x|(x>3)\\&(x<5)|N}")))
 
 
 

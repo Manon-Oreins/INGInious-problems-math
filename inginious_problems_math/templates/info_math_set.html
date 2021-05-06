@@ -1,0 +1,74 @@
+{# This file is part of INGInious. See the LICENSE and the COPYRIGHTS files for #}
+{#  more information about the licensing of this file. #}
+
+<text> {{_("Problem type: {}".format(friendly_type))}}</text>
+<pre><text>{{_(
+"This problem type is designed for sets.
+If you want an equation or a matrix...
+Please refer to other problem types.
+
+Notes:
+Sets can be defined as implicit sets, {x|x²<25|N}
+or as explicit sets, such as {1,2,3,4}.
+Please select a format with the checkbox and don't mix
+them both. This will also tell the student which
+format to use in his answer.
+
+Explicit sets:
+For thse sets, the union ∪ and intersection ∩ symbols
+are available.
+Please note the union is computed first then the 
+intersection is computed at the end. In other words,
+A∪B∩C means (A∪B)∩C and A∩B∪C means A∩(B∪C).
+
+Implicit sets:
+These allow to represent a high number of elements in a
+set without explicitly writing them one by one.
+With the format {v|c|d}:
+v is the variable such as x
+c is the condition such as x²<25
+d is the domain such as N
+
+Condition can be:
+A single condition such as x²>25
+Multiple conditions such as (x²>25)&(x³<1000)
+
+Domain can be:
+N for positive integers excluding 0
+Z+ for positive integers including 0
+Z- for negative integers including 0
+Z for all the integers
+R for reals
+Q for rationals
+{1,2,3} for a specific set as domain
+It is advised to specify to the students which domain
+to use since different domains with different
+conditions leading to the same mathematical result
+may not be considered equals.
+
+It is advised to only ask for a single answer for this
+problem type. Adding multiple answers with the button
+add answer may lead to errors.
+"
+)}}</text></pre>
+
+<text> {{ _("General Remarks:") }}</text>
+<pre><text>{{_(
+"e always represents the basis of natural logarithms.
+i always represents the imaginary constant.
+Do not use these letters to represent variables.
+
+log means log base 10.
+ln means natural logarithm.
+log_a means log with base a.
+
+Decimals are represented using .
+Separations are represented using ,
+
+When a letter is followed by an opening parenthesis,
+it is interpreted as \"function of...\"
+For example, x(2y+3) means x evaluated at 2y+3
+If you want a multiplication instead,
+use x*(2y+3) or (2y+3)x.
+This helps differentiate variables and functions."
+)}}</text></pre>

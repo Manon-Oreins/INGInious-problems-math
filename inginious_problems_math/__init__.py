@@ -13,6 +13,7 @@ from inginious_problems_math.pages.answers import AnswersPage
 from inginious_problems_math.math_problem import DisplayableMathProblem
 from inginious_problems_math.math_matrix import DisplayableMathMatrixProblem
 from inginious_problems_math.math_interval import DisplayableMathIntervalProblem
+from inginious_problems_math.math_set import DisplayableMathSetProblem
 
 __version__ = "0.1.dev0"
 
@@ -43,3 +44,4 @@ def init(plugin_manager, course_factory, client, plugin_config):
     course_factory.get_task_factory().add_problem_type(DisplayableMathProblem)
     course_factory.get_task_factory().add_problem_type(DisplayableMathMatrixProblem)
     course_factory.get_task_factory().add_problem_type(DisplayableMathIntervalProblem)
+    course_factory.get_task_factory().add_problem_type(DisplayableMathSetProblem)

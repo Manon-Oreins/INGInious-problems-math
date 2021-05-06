@@ -1,0 +1,16 @@
+{# This file is part of INGInious. See the LICENSE and the COPYRIGHTS files for #}
+{#  more information about the licensing of this file. #}
+
+{% extends "math_edit.html" %}
+{% block math_extension %}
+    <div class="form-group row">
+        <label class="col-sm-2 control-label" id="set_type_label-PID">{{_("Set type")}}</label>
+        <div class="col-sm-10">
+            <label><input type="radio" class="radio" onchange="{{problem_type}}_modify_format('PID','Explicit: {1,2,3}')" checked="true" value="explicit" id="set_explicit-PID" name="problem[PID][set_type]" />{{_(" Explicit ")}}</label>
+            <label><input type="radio" class="radio" onchange="{{problem_type}}_modify_format('PID','Implicit: {x|x<4|N}')" value="implicit" id="set_implicit-PID" name="problem[PID][set_type]" />{{_(" Implicit ")}}</label>
+        </div>
+    </div>
+{% endblock %}}
+
+
+

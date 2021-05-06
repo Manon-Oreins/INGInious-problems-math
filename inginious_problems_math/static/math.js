@@ -42,14 +42,7 @@ function studio_init_template_math(well, pid, problem)
         jQuery.each(problem["answers"], function(index, elem) {
             math_create_answer(pid, elem);
         });
-    else if (problem.type == "math_interval")
-        jQuery.each(problem["answers"], function(index, elem) {
-            math_interval_create_answer(pid, elem);
-        });
-    else if (problem.type == "math_matrix")
-        jQuery.each(problem["answers"], function(index, elem) {
-            math_matrix_create_answer(pid, elem);
-        });
+
 }
 
 function load_feedback_math(key, content) {
@@ -161,7 +154,10 @@ function load_feedback_math_matrix(key, content) {
 
 function studio_init_template_math_matrix(well, pid, problem)
 {
-    return studio_init_template_math(well, pid, problem)
+    studio_init_template_math(well, pid, problem)
+    jQuery.each(problem["answers"], function(index, elem) {
+        math_matrix_create_answer(pid, elem);
+    });
 }
 
 function math_matrix_create_answer(pid, choice_data) {
@@ -182,9 +178,46 @@ function load_feedback_math_interval(key, content) {
 
 function studio_init_template_math_interval(well, pid, problem)
 {
-    return studio_init_template_math(well, pid, problem)
+    studio_init_template_math(well, pid, problem)
+    jQuery.each(problem["answers"], function(index, elem) {
+        math_interval_create_answer(pid, elem);
+    });
 }
 
 function math_interval_create_answer(pid, choice_data) {
-    return math_create_answer(pid, choice_data, "math_interval")
+    return math_create_answer(pid, choice_data, "math_interval");
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+// MATH SET /////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
+function load_input_math_set(submissionid, key, input) {
+    load_input_math(submissionid, key, input)
+}
+
+function load_feedback_math_set(key, content) {
+    load_feedback_math(key,content)
+}
+
+function studio_init_template_math_set(well, pid, problem)
+{
+    studio_init_template_math(well, pid, problem)
+    var set_type = "";
+    if("set_type" in problem)
+        set_type = problem["set_type"];
+
+    $("#set_"+ set_type + "-"+pid).attr('checked', true)
+
+    jQuery.each(problem["answers"], function(index, elem) {
+        math_set_create_answer(pid, elem);
+    });
+}
+
+function math_set_create_answer(pid, choice_data) {
+    return math_create_answer(pid, choice_data, "math_set")
+}
+
+function math_set_modify_format(pid, value){
+    $("#format_edit-" + pid).text(value)
 }
