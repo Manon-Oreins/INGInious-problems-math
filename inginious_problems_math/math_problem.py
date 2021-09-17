@@ -98,12 +98,16 @@ class MathProblem(Problem):
 
     @classmethod
     def parse_answer(cls, latex_str):
+
         # The \left and \right prefix are not supported by sympy (and useless for treatment)
         latex_str = re.sub("(\\\left|\\\right)", "", latex_str)
         latex_str = re.sub("(\\\log_)(\w)(\(|\^)", "\\\log_{\\2}\\3", latex_str)
         latex_str = re.sub("(\\\log_)(\w)(\w+)", "\\\log_{\\2}(\\3)", latex_str)
         latex_str = re.sub(r'(\w)_(\w)(\w+)', r'\1_{\2}\3', latex_str) #x_ab means x_{a}b but x_{ab} correclty means x_{ab}
         latex_str = latex_str.replace("\\ne", "\\neq")
+        latex_str = latex_str.replace("\\right|", "|")
+        latex_str = latex_str.replace("\\left|", "|")
+
         #general constants: always use i for imaginary constant, e for natural logarithm basis and \pi (or the symbol from toolbox) for pi
         eq = sympify(parse_latex(latex_str).subs([("e", E), ("i", I), ("pi", pi)]))
         return simplify(eq)

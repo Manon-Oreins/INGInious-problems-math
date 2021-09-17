@@ -34,6 +34,9 @@ class TestParseAnswer(unittest.TestCase):
         self.assertEqual((int(MathProblem.parse_answer("x3+2-x-1").subs("x",17))),35)
         self.assertEqual((int(MathProblem.parse_answer("\\frac{3xxx+2xx-xxx-1xx}{xx}").subs("x",17))),35)
         self.assertEqual((int(MathProblem.parse_answer("\\frac{15xxx+10xx-5xxx-5xx}{5xx}").subs("x",17))),35)
+        self.assertEqual((int(MathProblem.parse_answer("|x|").subs("x",-5))),5)
+        self.assertEqual((int(MathProblem.parse_answer("\\left|x\\right|").subs("x",-5))),5)
+
 
 
     def test_simple_polynomial(self):
