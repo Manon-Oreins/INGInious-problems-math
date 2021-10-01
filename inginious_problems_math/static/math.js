@@ -66,7 +66,7 @@ function math_create_choice(pid, choice_data) {
     var new_row = $("<div></div>").attr('id', 'choice-' + index + '-' + pid).html(new_row_content);
     $("#choices-" + pid, well).append(new_row);
 
-    var editor_answer = new MathEditor("problem[" + pid + "][choices][" + index + "][answer]");
+    var editor_answer = new MathEditor("problem[" + pid + "][choices][" + index + "][answer]", $("#collapse_" + pid));
     var editor_feedback = registerCodeEditor($(".subproblem_math_feedback", new_row)[0], 'rst', 1);
 
     if("answer" in choice_data)
@@ -92,7 +92,7 @@ function math_create_answer(pid, choice_data, type="math") {
     var new_row = $("<div></div>").attr('id', 'answer-' + index + '-' + pid).html(new_row_content);
     $("#answers-" + pid, well).append(new_row);
 
-    var editor_answer = new MathEditor("problem[" + pid + "][answers][" + index + "]");
+    var editor_answer = new MathEditor("problem[" + pid + "][answers][" + index + "]", $("#collapse_" + pid));
     editor_answer.setLatex(choice_data);
 }
 
@@ -118,7 +118,7 @@ function math_add_answer(pid, data) {
     div.append(del_btn).append(math_field).append(math_input);
     $("#math-fields-" + pid).append(div);
 
-    var editor_answer = new MathEditor(index + "-" + pid);
+    var editor_answer = new MathEditor(index + "-" + pid, $("#collapse_" + pid));
     editor_answer.setLatex(data);
 }
 
