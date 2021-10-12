@@ -39,16 +39,17 @@ class HintPage(INGIniousAuthPage):
                 hints = str(ParsableText(problem.gettext(language, problem._hints), "rst",
                                     translation=problem.get_translation_obj(language)))
 
-        if hints:
-            user_tasks = self.database.user_tasks.find_one({"username": username, "courseid": courseid,
-                                                            "taskid": taskid})
-            try:
-                state = json.loads(user_tasks.get("state", "{}"))
-            except:
-                state = {}
-
-            state.setdefault("hints", {})[problemid] = True
-            self.database.user_tasks.update_one({"username": username, "courseid": courseid,
-                                                 "taskid": taskid}, {"$set": {"state": json.dumps(state)}})
+        #TODO: Uncomment me when state and hints are fully implemented
+        #if hints:
+        #    user_tasks = self.database.user_tasks.find_one({"username": username, "courseid": courseid,
+        #                                                    "taskid": taskid})
+        #    try:
+        #        state = json.loads(user_tasks.get("state", "{}"))
+        #    except:
+        #        state = {}
+        #
+        #    state.setdefault("hints", {})[problemid] = True
+        #    self.database.user_tasks.update_one({"username": username, "courseid": courseid,
+        #                                         "taskid": taskid}, {"$set": {"state": json.dumps(state)}})
 
         return hints
