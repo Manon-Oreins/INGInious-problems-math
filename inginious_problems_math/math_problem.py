@@ -73,15 +73,22 @@ class MathProblem(Problem):
         for i in range(0, len(self._choices)):
             unexpec_answer = unexpec_answers[i]
             for student_answer in student_answers:
-                if self.is_equal(student_answer, unexpec_answer):
-                    msg = self.gettext(language, self._choices[i]["feedback"])
-                    return False, None, [msg], 0, state
+                try:
+                    if self.is_equal(student_answer, unexpec_answer):
+                        msg = self.gettext(language, self._choices[i]["feedback"])
+                        return False, None, [msg], 0, state
+                except Exception as e:
+                    return False, None, [str(e)], 0, state
 
         for i in range(0, len(correct_answers)):
-            if not self.is_equal(student_answers[i], correct_answers[i]):
-                msg = [self.gettext(language, self._error_message) or "_wrong_answer"]
-                msg += ["Not correct : :math:`{}`".format(latex(student_answers[i]))]
-                return False, None, msg, 0, state
+            try:
+                if not self.is_equal(student_answers[i], correct_answers[i]):
+                    msg = [self.gettext(language, self._error_message) or "_wrong_answer"]
+                    msg += ["Not correct : :math:`{}`".format(latex(student_answers[i]))]
+                    return False, None, msg, 0, state
+            except Exception as e:
+                return False, None, [str(e)], 0, state
+
 
         msg = self.gettext(language, self._success_message) or "_correct_answer"
         return True, None, [msg], 0, state
@@ -116,7 +123,6 @@ class MathProblem(Problem):
         """Compare answers"""
         #answer=eq1, solution=eq2
         equation_types = [Equality, Unequality, StrictLessThan, LessThan, StrictGreaterThan, GreaterThan]
-
         if self._tolerance:
             eq1 = eq1.subs([(E, math.e), (pi, math.pi)])
             eq2 = eq2.subs([(E, math.e), (pi, math.pi)])
@@ -138,7 +144,6 @@ class MathProblem(Problem):
     @classmethod
     def parse_problem(cls, problem_content):
         problem_content = Problem.parse_problem(problem_content)
-
         if "tolerance" in problem_content:
             if problem_content["tolerance"]:
                 problem_content["tolerance"] = float(problem_content["tolerance"])

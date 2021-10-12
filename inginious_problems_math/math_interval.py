@@ -75,7 +75,6 @@ class MathIntervalProblem(MathProblem):
         element = element.replace("\\infinity", str(sys.maxsize))
         return MathProblem.parse_answer(element)
 
-
     def is_equal(self, eq1, eq2):
         """Redfines the is_equal to only accept Intervals and Unions"""
         #Intervals
