@@ -6,7 +6,7 @@ import math
 from sympy.core import Number
 from sympy.parsing.latex import parse_latex
 from sympy.printing.latex import latex
-from sympy import simplify, sympify, N, E, pi, I, Equality, Unequality, StrictLessThan, LessThan, StrictGreaterThan, GreaterThan
+from sympy import simplify, sympify, expand_log, expand_trig, factor, N, E, pi, I, Equality, Unequality, StrictLessThan, LessThan, StrictGreaterThan, GreaterThan
 from inginious.common.tasks_problems import Problem
 from inginious.frontend.task_problems import DisplayableProblem
 from inginious.frontend.parsable_text import ParsableText
@@ -29,7 +29,10 @@ class MathProblem(Problem):
         self._error_message = content.get("error_message", None)
         self._success_message = content.get("success_message", None)
         self._choices = content.get("choices", [])
-
+        self._logical_comparison = content.get("logical_comparison", True)
+        self._use_log = content.get("use_log", False)
+        self._use_trigo = content.get("use_trigo", False)
+        self._use_complex = content.get("use_complex", False)
 
     @classmethod
     def get_type(cls):
@@ -55,7 +58,7 @@ class MathProblem(Problem):
             correct_answers = [self.parse_answer(eq) for eq in self._answers]
             unexpec_answers = [self.parse_answer(choice["answer"]) for choice in self._choices]
         except Exception as e:
-            return False, None, ["_wrong_answer", "Parsing error: \n\n .. code-block:: \n\n\t" + str(e).replace("\n", "\n\t")], 1, state
+            return False, None, ["_wrong_answer", "Parsing error: \n\n .. code-block:: \n\n\t" + str(e).replace("\n", "\n\t")], 0, state
 
         # Sort both student and correct answers array per their string representation
         # Equal equations should have the same string representation
@@ -117,12 +120,29 @@ class MathProblem(Problem):
 
         #general constants: always use i for imaginary constant, e for natural logarithm basis and \pi (or the symbol from toolbox) for pi
         eq = sympify(parse_latex(latex_str).subs([("e", E), ("i", I), ("pi", pi)]))
-        return simplify(eq)
+        return eq
 
     def is_equal(self, eq1, eq2):
         """Compare answers"""
         #answer=eq1, solution=eq2
         equation_types = [Equality, Unequality, StrictLessThan, LessThan, StrictGreaterThan, GreaterThan]
+        #Logical comparison/Perfect match
+        if not self._logical_comparison:
+            return eq1 == eq2
+        eq1 = factor(simplify(eq1))    #simplify is mandatory to counter expand_trig and expand_log weaknesses
+        eq2 = factor(simplify(eq2))
+        #Trigonometric simplifications
+        if self._use_trigo:
+            eq1 = expand_trig(eq1)
+            eq2 = expand_trig(eq2)
+        #Logarithmic simplifications
+        if self._use_log:
+            if self._use_complex:
+                eq1 = expand_log(eq1)
+                eq2 = expand_log(eq2)
+            else:
+                eq1 = expand_log(eq1, force=True)
+                eq2 = expand_log(eq2, force=True)
         if self._tolerance:
             eq1 = eq1.subs([(E, math.e), (pi, math.pi)])
             eq2 = eq2.subs([(E, math.e), (pi, math.pi)])
@@ -144,12 +164,14 @@ class MathProblem(Problem):
     @classmethod
     def parse_problem(cls, problem_content):
         problem_content = Problem.parse_problem(problem_content)
+        if "logical_comparison" not in problem_content:
+            problem_content["logical_comparison"] = ''
+
         if "tolerance" in problem_content:
             if problem_content["tolerance"]:
                 problem_content["tolerance"] = float(problem_content["tolerance"])
             else:
                 del problem_content["tolerance"]
-
         if "choices" in problem_content:
             problem_content["choices"] = [val for _, val in
                                           sorted(iter(problem_content["choices"].items()), key=lambda x: int(x[0]))
@@ -160,6 +182,7 @@ class MathProblem(Problem):
         for message in ["error_message", "success_message"]:
             if message in problem_content and problem_content[message].strip() == "":
                 del problem_content[message]
+
 
         return problem_content
 

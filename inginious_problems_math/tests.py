@@ -12,7 +12,6 @@ from inginious_problems_math.math_set import MathSetProblem
 
 class TestParseAnswer(unittest.TestCase):
 
-
     def test_unique_expression(self):
         self.assertEqual((int(MathProblem.parse_answer("x").subs("x",10))),10)
         self.assertEqual((int(MathProblem.parse_answer("2x-x").subs("x",10))),10)
@@ -23,7 +22,6 @@ class TestParseAnswer(unittest.TestCase):
         self.assertEqual((int(MathProblem.parse_answer("1x").subs("x",10))),10)
         self.assertEqual((int(MathProblem.parse_answer("1x^1-5+5").subs("x",10))),10)
         self.assertEqual((int(MathProblem.parse_answer("\\frac{x^2}{x}").subs("x",10))),10)
-
 
     def test_simple_expression(self):
         self.assertEqual((int(MathProblem.parse_answer("2x+1").subs("x",17))),35)
@@ -37,8 +35,6 @@ class TestParseAnswer(unittest.TestCase):
         self.assertEqual((int(MathProblem.parse_answer("|x|").subs("x",-5))),5)
         self.assertEqual((int(MathProblem.parse_answer("\\left|x\\right|").subs("x",-5))),5)
 
-
-
     def test_simple_polynomial(self):
         self.assertEqual((int(MathProblem.parse_answer("3x^2+2x+5").subs("x",18))),1013)
         self.assertEqual((int(MathProblem.parse_answer("3x^2+2x+5+x^4-x^4").subs("x",18))),1013)
@@ -47,7 +43,6 @@ class TestParseAnswer(unittest.TestCase):
         self.assertEqual((int(MathProblem.parse_answer("xx+2xx+2x+5").subs("x",18))),1013)
         self.assertEqual((int(MathProblem.parse_answer("2+3x^2*2+x+x+3-3xx").subs("x",18))),1013)
         self.assertEqual((int(MathProblem.parse_answer("\\frac{2x+3x^3*2+xx+xx+3x-3xxx}{x}").subs("x",18))),1013)
-
 
     def test_multivariable_polynomial(self):
         self.assertEqual((int(MathProblem.parse_answer("3x^2+x+4y^2+2y+4").subs([("x",3), ("y", 4)]))),106)
@@ -59,7 +54,6 @@ class TestParseAnswer(unittest.TestCase):
         self.assertEqual((int(MathProblem.parse_answer("3x^2+x2-x+y^2*4+2y+4").subs([("x",3), ("y", 4)]))),106)
         self.assertEqual((int(MathProblem.parse_answer("\\frac{3x^3+xx2-xx+y^2*4x+2yx+4x}{x}").subs([("x",3), ("y", 4)]))),106)
         self.assertEqual((int(MathProblem.parse_answer("\\frac{3x^2y+xy2-xy+y^3*4+2yy+4y}{y}").subs([("x",3), ("y", 4)]))),106)
-
 
     def test_unique_exponent(self):
         self.assertEqual((int(MathProblem.parse_answer("x^1").subs("x",10))),10)
@@ -89,7 +83,6 @@ class TestParseAnswer(unittest.TestCase):
         self.assertEqual((float(MathProblem.parse_answer("\\frac{2x}{xxx^{2x^2}}").subs("x",2))),1/256)
         self.assertEqual((float(MathProblem.parse_answer("\\sqrt{\\frac{2x}{xxx^{2x^2}}}").subs("x",2))),math.sqrt(1/256))
 
-
     def test_multiple_exponent(self):
         self.assertEqual((int(MathProblem.parse_answer("x^2+y^2").subs([("x",2), ("y", 3)]))),13)
         self.assertEqual((int(MathProblem.parse_answer("x^y+y^x").subs([("x",2), ("y", 3)]))),17)
@@ -103,7 +96,6 @@ class TestParseAnswer(unittest.TestCase):
         self.assertEqual((int(MathProblem.parse_answer("2x^{y^2}").subs([("x", 2), ("y",3)]))), 1024)
         self.assertEqual((float(MathProblem.parse_answer("\\frac{x+x}{4xx^y+y^x2x}").subs([("x",2), ("y", 3)]))),1/25)
         self.assertEqual((float(MathProblem.parse_answer("\\sqrt{2x^{2y}}").subs([("x", 2), ("y",3)]))), math.sqrt(128))
-
 
     def test_log(self):
         self.assertEqual((int(MathProblem.parse_answer("\\log x").subs("x",10))),1)
@@ -127,8 +119,6 @@ class TestParseAnswer(unittest.TestCase):
         self.assertEqual((float(MathProblem.parse_answer("\\log xy").subs([("x",10), ("y",100)]))),3)
         self.assertEqual((float(MathProblem.parse_answer("\\left(\\log x\\right)y").subs([("x",100), ("y",10)]))),20)
 
-
-
     def test_single_char_subscripts(self):
         self.assertEqual((int(MathProblem.parse_answer("x_1").subs("x_{1}",10))),10)
         self.assertEqual((int(MathProblem.parse_answer("x_1+x_2").subs([("x_{1}",1), ("x_{2}", 4)]))),5)
@@ -145,7 +135,6 @@ class TestParseAnswer(unittest.TestCase):
         self.assertEqual((int(MathProblem.parse_answer("\\log10^{x_1}").subs([("x_{1}",3)]))),3)
         self.assertEqual((int(MathProblem.parse_answer("\\sqrt{\\log2x_1}").subs([("x_{1}",5000)]))),2)
         self.assertEqual((float(MathProblem.parse_answer("\\log\\left(x_1x_2\\right)").subs([("x_{1}",10), ("x_{2}", 2)]))),math.log10(20))
-
 
     def test_multi_char_subscripts(self):
         self.assertEqual((int(MathProblem.parse_answer("x_{12}").subs("x_{12}",10))),10)
@@ -165,7 +154,6 @@ class TestParseAnswer(unittest.TestCase):
         self.assertEqual((int(MathProblem.parse_answer("\\ln e^{xy}").subs([("x",2),("y", 3)]))),6)
         self.assertEqual((int(MathProblem.parse_answer("\\ln e^{x_1x_2}").subs([("x_{1}",2),("x_{2}", 3)]))),6)
 
-
     def test_math_all_together(self):
         self.assertEqual((float(MathProblem.parse_answer("\\frac{\\sqrt{x_{11}x_{12}+x_{13}x_{14}}}{\\sqrt[3]{x_{15}^{x_{12}}}x_{11}}").subs([("x_{11}",1),("x_{12}", 2),("x_{13}", 3),("x_{14}", 4),("x_{15}", 5)]))), math.sqrt(14)/(25**(1/3)))
         self.assertEqual((float(MathProblem.parse_answer("\\frac{\\sqrt{x_{11}x_{12}+x_{13}x_{14}}}{\\log\\left(\\sqrt[3]{x_{15}^{x_{12}}}\\right)}").subs([("x_{11}",1),("x_{12}", 2),("x_{13}", 3),("x_{14}", 4),("x_{15}", 5)]))), math.sqrt(14)/math.log10(25**(1/3)))
@@ -173,7 +161,6 @@ class TestParseAnswer(unittest.TestCase):
         self.assertEqual((float(MathProblem.parse_answer("\\sqrt{\\left(\\frac{x_{12}^{x_{14}}}{x_{13}^{x_{12}}}\\right)}").subs([("x_{11}",1),("x_{12}", 2),("x_{13}", 3),("x_{14}", 4),("x_{15}", 5)]))), 4/3)
         self.assertEqual((float(MathProblem.parse_answer("\\int_0^1\\sqrt{\\left(\\frac{x_{12}^{x_{14}}}{x_{13}^{x_{12}}}\\right)}").subs([("x_{11}",1),("x_{12}", 2),("x_{13}", 3),("x_{14}", 4),("x_{15}", 5)]))), 4/3)
         self.assertEqual(float(MathProblem.parse_answer("2\\pi* r_1").subs("r_{1}",10)), 2*math.pi*10)
-
 
     def test_interval(self):
         self.assertEqual(MathIntervalProblem.parse_answer("[0,x]").subs("x", 1), Interval(0, 1, False, False))
@@ -191,7 +178,6 @@ class TestParseAnswer(unittest.TestCase):
         self.assertEqual(MathIntervalProblem.parse_answer("[0,1]\\cup[1,2]"), Interval(0, 2, False, False))
         self.assertEqual(MathIntervalProblem.parse_answer("[1,2]\\cup[0,1]"), Interval(0, 2, False, False))
         self.assertEqual(MathIntervalProblem.parse_answer("[0,x]\\cup[x,2]").subs("x", 1), Interval(0, 2, False, False))
-
 
     def test_matrix(self):
         self.assertEqual(MathMatrixProblem.parse_answer("x, 2, 3").subs("x", 1), Matrix([[1, 2, 3]]))
@@ -232,7 +218,6 @@ class TestParseAnswer(unittest.TestCase):
         self.assertEqual(MathSetProblem.parse_answer("{1, 2}\\cap{2,3}\\cap{1,2}\\cap{2, 3, 4, 5}"), FiniteSet(2))
         self.assertEqual(MathSetProblem.parse_answer("{1, 2}\\cap{2,3}\\cap{1,2}\\cap{3, 4, 5}"), EmptySet)
         self.assertEqual(MathSetProblem.parse_answer("{1, 2}\\cup{2,3}\\cap{1,2}\\cap{2, 3, 4, 5}"), FiniteSet(2))
-
 
     def test_set_implicit(self):
         x = Symbol('x')
@@ -279,6 +264,84 @@ class TestIsEqual(unittest.TestCase):
         self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\frac{1}{2}"), MathProblem.parse_answer("0.5")))
         self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("0.5"), MathProblem.parse_answer("\\frac{5}{10}")))
         self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("0.5"), MathProblem.parse_answer("\\frac{2x_1x_{12}}{4x_1x_{12}}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\frac{e^{x}*(x-1)^2}{(x^2+1)^2}"), MathProblem.parse_answer("\\frac{e^x*(x^2+1-2*x)}{x^4+1+2*x^2}")))
+
+    def test_is_equal_perfect_match(self):
+        test_instance = MathProblem("fake_id", {"fake_content": 5}, "french", "fake_taskf")
+        test_instance._logical_comparison = False
+        self.assertFalse(test_instance.is_equal(MathProblem.parse_answer("125"), MathProblem.parse_answer("127-2")))
+        self.assertFalse(test_instance.is_equal(MathProblem.parse_answer("x"), MathProblem.parse_answer("2x-x")))
+        self.assertFalse(test_instance.is_equal(MathProblem.parse_answer("x*(x+1)"), MathProblem.parse_answer("2x+x")))
+        self.assertFalse(test_instance.is_equal(MathProblem.parse_answer("\\sin{x}**2+\\cos{x}**2"), MathProblem.parse_answer("1")))
+        self.assertFalse(test_instance.is_equal(MathProblem.parse_answer("\\ln{x^{2}}"), MathProblem.parse_answer("2*\\ln{x}")))
+        self.assertFalse(test_instance.is_equal(MathProblem.parse_answer("x*(x+1)"), MathProblem.parse_answer("(x+1)*x")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("125"), MathProblem.parse_answer("125")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("x"), MathProblem.parse_answer("x")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\ln{x^{2}}"), MathProblem.parse_answer("\\ln{x^{2}}")))
+
+    def test_is_equal_use_log(self):
+        test_instance = MathProblem("fake_id", {"fake_content": 5}, "french", "fake_taskf")
+        test_instance._use_log = True
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\log_{e}{x}"), MathProblem.parse_answer("\\ln{x}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\log{x} + \\log{y}"), MathProblem.parse_answer("\\log{xy}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\log_{z}{x} + \\log_{z}{y}"), MathProblem.parse_answer("\\log_{z}{xy}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\log{x^{2}}"), MathProblem.parse_answer("2*\\log{x}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\log_{z}{x^{2}}"), MathProblem.parse_answer("2*\\log_{z}{x}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\log{\\frac{x}{y}}"), MathProblem.parse_answer("\\log{x} -\\log{y}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\log_{z}{\\frac{x}{y}}"), MathProblem.parse_answer("\\log_{z}{x} -\\log_{z}{y}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("3*\\log{x} + \\log{x}"), MathProblem.parse_answer("4*\\log{x}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("3*\\log_{z}{x} + \\log_{z}{x}"), MathProblem.parse_answer("4*\\log_{z}{x}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("x*\\log{x} + y*\\log{x}"), MathProblem.parse_answer("(x+y)*\\log{x}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("x*\\log_{z}{x} + y*\\log_{z}{x}"), MathProblem.parse_answer("(x+y)*\\log_{z}{x}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\log_{z}{\\frac{2x^{3}}{5}}"), MathProblem.parse_answer("\\log_{z}{2} + 3*\\log_{z}{x} - \\log_{z}{5}")))
+        #If variables can be any arbitrary complex
+        test_instance._use_complex = True
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\log_{e}{x}"), MathProblem.parse_answer("\\ln{x}")))
+        self.assertFalse(test_instance.is_equal(MathProblem.parse_answer("\\log{x} + \\log{y}"), MathProblem.parse_answer("\\log{xy}")))
+        self.assertFalse(test_instance.is_equal(MathProblem.parse_answer("\\log_{z}{x} + \\log_{z}{y}"), MathProblem.parse_answer("\\log_{z}{xy}")))
+        self.assertFalse(test_instance.is_equal(MathProblem.parse_answer("\\log{x^{2}}"), MathProblem.parse_answer("2*\\log{x}")))
+        self.assertFalse(test_instance.is_equal(MathProblem.parse_answer("\\log_{z}{x^{2}}"), MathProblem.parse_answer("2*\\log_{z}{x}")))
+        self.assertFalse(test_instance.is_equal(MathProblem.parse_answer("\\log{\\frac{x}{y}}"), MathProblem.parse_answer("\\log{x} -\\log{y}")))
+        self.assertFalse(test_instance.is_equal(MathProblem.parse_answer("\\log_{z}{\\frac{x}{y}}"), MathProblem.parse_answer("\\log_{z}{x} -\\log_{z}{y}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("3*\\log{x} + \\log{x}"), MathProblem.parse_answer("4*\\log{x}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("3*\\log_{z}{x} + \\log_{z}{x}"), MathProblem.parse_answer("4*\\log_{z}{x}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("x*\\log{x} + y*\\log{x}"), MathProblem.parse_answer("(x+y)*\\log{x}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("x*\\log_{z}{x} + y*\\log_{z}{x}"), MathProblem.parse_answer("(x+y)*\\log_{z}{x}")))
+        self.assertFalse(test_instance.is_equal(MathProblem.parse_answer("\\log_{z}{\\frac{2x^{3}}{5}}"), MathProblem.parse_answer("\\log_{z}{2} + 3*\\log_{z}{x} - \\log_{z}{5}")))
+
+    def test_is_equal_use_trigo(self):
+        test_instance = MathProblem("fake_id", {"fake_content": 5}, "french", "fake_taskf")
+        test_instance._use_trigo = True
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\cos^{2}{x}"), MathProblem.parse_answer("(\\cos{x})^{2}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\cos^2{x} + \\sin^2{x}"), MathProblem.parse_answer("1")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\cos{-x}"), MathProblem.parse_answer("\\cos{x}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\sin{-x}"), MathProblem.parse_answer("-\\sin{x}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\cos{\\pi - x}"), MathProblem.parse_answer("-\\cos{x}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\sin{\\pi - x}"), MathProblem.parse_answer("\\sin{x}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\cos{\\pi + x}"), MathProblem.parse_answer("-\\cos{x}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\sin{\\pi + x}"), MathProblem.parse_answer("-\\sin{x}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\cos{\\frac{\\pi}{2} - x}"), MathProblem.parse_answer("\\sin{x}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\sin{\\frac{\\pi}{2} - x}"), MathProblem.parse_answer("\\cos{x}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\cos{\\frac{\\pi}{2} + x}"), MathProblem.parse_answer("-\\sin{x}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\sin{\\frac{\\pi}{2} + x}"), MathProblem.parse_answer("\\cos{x}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\cos{x+y}"), MathProblem.parse_answer("\\cos{x}\\cos{y} - \\sin{x}\\sin{y}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\sin{x+y}"), MathProblem.parse_answer("\\sin{x}\\cos{y} + \\cos{x}\\sin{y}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\tan{x+y}"), MathProblem.parse_answer("\\frac{\\tan{x} + \\tan{y}}{1-\\tan{x}\\tan{y}}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\cos{2x}"), MathProblem.parse_answer("\\frac{1-\\tan^2{x}}{1+\\tan^2{x}}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\sin{2x}"), MathProblem.parse_answer("2\\sin{x}\\cos{x}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\tan{2x}"), MathProblem.parse_answer("\\frac{2\\tan{x}}{1-\\tan^2{x}}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\cos^{2}{x}"), MathProblem.parse_answer("\\frac{1 + \\cos{2x}}{2}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\sin^{2}{x}"), MathProblem.parse_answer("\\frac{1 - \\cos{2x}}{2}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\tan^{2}{x}"), MathProblem.parse_answer("\\frac{1 - \\cos{2x}}{1 + \\cos{2x}}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\cos{x}\\cos{y}"), MathProblem.parse_answer("\\frac{\\cos{x+y} + \\cos{x-y}}{2}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\sin{x}\\sin{y}"), MathProblem.parse_answer("\\frac{\\cos{x-y} - \\cos{x+y}}{2}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\sin{x}\\cos{y}"), MathProblem.parse_answer("\\frac{\\sin{x+y} + \\sin{x-y}}{2}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\cos{x}\\sin{y}"), MathProblem.parse_answer("\\frac{\\sin{x+y} - \\sin{x-y}}{2}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\cos{x} + \\cos{y}"), MathProblem.parse_answer("2\\cos{\\frac{x+y}{2}}\\cos{\\frac{x-y}{2}}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\cos{x} - \\cos{y}"), MathProblem.parse_answer("-2\\sin{\\frac{x+y}{2}}\\sin{\\frac{x-y}{2}}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\sin{x} + \\sin{y}"), MathProblem.parse_answer("2\\sin{\\frac{x+y}{2}}\\cos{\\frac{x-y}{2}}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\sin{x} - \\sin{y}"), MathProblem.parse_answer("2\\sin{\\frac{x-y}{2}}\\cos{\\frac{x+y}{2}}")))
+        self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\tan{x} + \\tan{y}"), MathProblem.parse_answer("\\frac{\\sin{x+y}}{\\cos{x}\\cos{y}}")))
 
     def test_is_equal_math_tolerance(self):
         test_instance = MathProblem("fake_id", {"fake_content": 5}, "french", "fake_taskf")
@@ -313,9 +376,6 @@ class TestIsEqual(unittest.TestCase):
         self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\pi"), MathProblem.parse_answer("3.141")))
         self.assertTrue(test_instance.is_equal(MathProblem.parse_answer("\\pi"), MathProblem.parse_answer("3.1415")))
 
-
-
-
     def test_is_equal_math_interval(self):
         test_instance = MathIntervalProblem("fake_id", {"fake_content": 5}, "french", "fake_taskf")
         self.assertTrue(test_instance.is_equal(MathIntervalProblem.parse_answer("[0,1]"), MathIntervalProblem.parse_answer("[0,1]")))
@@ -332,7 +392,6 @@ class TestIsEqual(unittest.TestCase):
         self.assertTrue(test_instance.is_equal(MathIntervalProblem.parse_answer("[0,\\frac{\\sqrt{3}}{3}]"), MathIntervalProblem.parse_answer("[0,\\frac{1}{\\sqrt{3}}]")))
         self.assertFalse(test_instance.is_equal(MathIntervalProblem.parse_answer("[0,\\frac{\\sqrt{3}}{3})"), MathIntervalProblem.parse_answer("[0,\\frac{1}{\\sqrt{3}}]")))
         self.assertFalse(test_instance.is_equal(MathIntervalProblem.parse_answer("[0,\\frac{\\sqrt{3}}{3}]"), MathIntervalProblem.parse_answer("(0,\\frac{1}{\\sqrt{3}}]")))
-
 
     def test_is_equal_math_matrix(self):
         test_instance = MathMatrixProblem("fake_id", {"fake_content": 5}, "french", "fake_taskf")
@@ -388,7 +447,6 @@ class TestIsEqual(unittest.TestCase):
         self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x|(x<5)\\&(x>3)|{1,2,3,4,5}}"), MathSetProblem.parse_answer("{x|(x>3)\\&(x<5)|{1,2,3,4,5}}")))
         self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x|(x<5)\\&(x>3)|N}"), MathSetProblem.parse_answer("{x|(x>3)\\&(x<5)|N}")))
         self.assertTrue(test_instance.is_equal(MathSetProblem.parse_answer("{x|(x<4+1)\\&(x>\\frac{6}{2})|N}"), MathSetProblem.parse_answer("{x|(x>3)\\&(x<5)|N}")))
-
 
 
 if __name__ == '__main__':

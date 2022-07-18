@@ -4,6 +4,7 @@ from inginious.frontend.task_problems import DisplayableProblem
 from inginious_problems_math.math_problem import MathProblem, DisplayableMathProblem
 
 from sympy import Matrix
+from sympy import simplify
 
 PATH_TO_PLUGIN = os.path.abspath(os.path.dirname(__file__))
 PATH_TO_TEMPLATES = os.path.join(PATH_TO_PLUGIN, "templates")
@@ -34,7 +35,7 @@ class MathMatrixProblem(MathProblem):
     @classmethod
     def parse_element(cls, latex_str):
         """Parse a single element"""
-        return MathProblem.parse_answer(latex_str)
+        return simplify(MathProblem.parse_answer(latex_str))
 
     def is_equal(self, matrix1, matrix2):
         """Refefines the is_equal method to compare two matrix by comparing lines one by one"""
