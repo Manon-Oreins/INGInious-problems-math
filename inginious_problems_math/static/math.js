@@ -18,7 +18,7 @@ function studio_init_template_math(well, pid, problem)
     var success_message = "";
     var error_message = "";
     var hints = "";
-    var logical_comparison = 'on';
+    var logical_comparison = true;
     var use_log = problem["use_log"];
     var use_trigo = problem["use_trigo"];
     var use_complex = problem["use_complex"];

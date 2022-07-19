@@ -35,6 +35,7 @@ class MathMatrixProblem(MathProblem):
     @classmethod
     def parse_element(cls, latex_str):
         """Parse a single element"""
+        # Needs simplify because the parser of MathProblem doesn't do any
         return simplify(MathProblem.parse_answer(latex_str))
 
     def is_equal(self, matrix1, matrix2):

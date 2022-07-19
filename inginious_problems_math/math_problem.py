@@ -120,6 +120,7 @@ class MathProblem(Problem):
 
         #general constants: always use i for imaginary constant, e for natural logarithm basis and \pi (or the symbol from toolbox) for pi
         eq = sympify(parse_latex(latex_str).subs([("e", E), ("i", I), ("pi", pi)]))
+        # Do not simplify the answer to be able to check for perfect match if needed
         return eq
 
     def is_equal(self, eq1, eq2):
@@ -165,7 +166,7 @@ class MathProblem(Problem):
     def parse_problem(cls, problem_content):
         problem_content = Problem.parse_problem(problem_content)
         if "logical_comparison" not in problem_content:
-            problem_content["logical_comparison"] = ''
+            problem_content["logical_comparison"] = False
 
         if "tolerance" in problem_content:
             if problem_content["tolerance"]:
@@ -191,7 +192,7 @@ class MathProblem(Problem):
         return Problem.get_text_fields()
 
 class DisplayableMathProblem(MathProblem, DisplayableProblem):
-    """ A displayable match problem """
+    """ A displayable math problem """
 
     # Some class attributes
     problem_type = "math"
@@ -206,7 +207,7 @@ class DisplayableMathProblem(MathProblem, DisplayableProblem):
         return problem_type
 
     def show_input(self, template_helper, language, seed, format=math_format):
-        """ Show MatchProblem """
+        """ Show MathProblem """
         header = ParsableText(self.gettext(language, self._header), "rst",
                               translation=self.get_translation_obj(language))
         return template_helper.render("math.html", template_folder=PATH_TO_TEMPLATES, inputId=self.get_id(),
