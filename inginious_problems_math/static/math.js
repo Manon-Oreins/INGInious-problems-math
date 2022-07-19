@@ -22,6 +22,11 @@ function studio_init_template_math(well, pid, problem)
     var use_log = problem["use_log"];
     var use_trigo = problem["use_trigo"];
     var use_complex = problem["use_complex"];
+    var error_msg_visibility = 'always';
+    var error_msg_visibility_start = problem["error_msg_visibility_start"];
+    var error_msg_attempts = problem["error_msg_attempts"];
+    if("error_msg_visibility" in problem)
+        error_msg_visibility = problem["error_msg_visibility"];
     if("logical_comparison" in problem)
         logical_comparison = problem["logical_comparison"];
     if("tolerance" in problem)
@@ -37,6 +42,9 @@ function studio_init_template_math(well, pid, problem)
 
     $("#tolerance-" + pid).val(tolerance);
     $("#logical_comparison-" + pid).prop("checked", logical_comparison);
+    $("#error_msg_visibility-" + error_msg_visibility + "-" +  pid).prop("checked", true);
+    $("#error_msg_attempts-" + pid).prop("value", error_msg_attempts);
+    $("#error_msg_date_picker-" + pid).prop("value", error_msg_visibility_start);
     $("#use_log-" + pid).prop("checked", use_log);
     $("#use_trigo-" + pid).prop("checked", use_trigo);
     $("#use_complex-" + pid).prop("checked", use_complex);
