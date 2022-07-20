@@ -29,6 +29,10 @@ class MathProblem(Problem):
         self._error_message = content.get("error_message", None)
         self._success_message = content.get("success_message", None)
         self._choices = content.get("choices", [])
+        self._comparison_type = content.get("comparison_type", "symbolic")
+        self._use_log = content.get("use_log", False)
+        self._use_trigo = content.get("use_trigo", False)
+        self._use_complex = content.get("use_complex", False)
         self._error_message_visibility = content.get("error_msg_visibility", "always")
         self._error_msg_hidden_until = content.get("error_msg_visibility_start", "2000-01-01 00:00:00")
         self._error_msg_attempts = content.get("error_msg_attempts", 0)
@@ -139,6 +143,23 @@ class MathProblem(Problem):
         """Compare answers"""
         #answer=eq1, solution=eq2
         equation_types = [Equality, Unequality, StrictLessThan, LessThan, StrictGreaterThan, GreaterThan]
+        #Symbolic equality/Perfect match
+        if self._comparison_type == "perfect_match":
+            return eq1 == eq2
+        eq1 = factor(simplify(eq1))    #simplify is mandatory to counter expand_trig and expand_log weaknesses
+        eq2 = factor(simplify(eq2))
+        #Trigonometric simplifications
+        if self._use_trigo:
+            eq1 = expand_trig(eq1)
+            eq2 = expand_trig(eq2)
+        #Logarithmic simplifications
+        if self._use_log:
+            if self._use_complex:
+                eq1 = expand_log(eq1)
+                eq2 = expand_log(eq2)
+            else:
+                eq1 = expand_log(eq1, force=True)
+                eq2 = expand_log(eq2, force=True)
         if self._tolerance:
             eq1 = eq1.subs([(E, math.e), (pi, math.pi)])
             eq2 = eq2.subs([(E, math.e), (pi, math.pi)])
