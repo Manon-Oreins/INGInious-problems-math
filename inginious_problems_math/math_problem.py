@@ -29,7 +29,7 @@ class MathProblem(Problem):
         self._error_message = content.get("error_message", None)
         self._success_message = content.get("success_message", None)
         self._choices = content.get("choices", [])
-        self._logical_comparison = content.get("logical_comparison", True)
+        self._comparison_type = content.get("comparison_type", "symbolic")
         self._use_log = content.get("use_log", False)
         self._use_trigo = content.get("use_trigo", False)
         self._use_complex = content.get("use_complex", False)
@@ -144,8 +144,8 @@ class MathProblem(Problem):
         """Compare answers"""
         #answer=eq1, solution=eq2
         equation_types = [Equality, Unequality, StrictLessThan, LessThan, StrictGreaterThan, GreaterThan]
-        #Logical comparison/Perfect match
-        if not self._logical_comparison:
+        #Symbolic equality/Perfect match
+        if self._comparison_type == "perfect_match":
             return eq1 == eq2
         eq1 = factor(simplify(eq1))    #simplify is mandatory to counter expand_trig and expand_log weaknesses
         eq2 = factor(simplify(eq2))
@@ -182,8 +182,6 @@ class MathProblem(Problem):
     @classmethod
     def parse_problem(cls, problem_content):
         problem_content = Problem.parse_problem(problem_content)
-        if "logical_comparison" not in problem_content:
-            problem_content["logical_comparison"] = False
 
         if "error_msg_visibility_start" in problem_content and problem_content["error_msg_visibility_start"] == '':
             del problem_content["error_msg_visibility_start"]
