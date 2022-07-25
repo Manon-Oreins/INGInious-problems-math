@@ -98,44 +98,6 @@
                     </label></div>
                 </div>
             </div>
-            <div class="form-group row">
-                <label class="col-sm-2 control-label">{{_("Error message")}}</label>
-                <div class="col-sm-10">
-                    <label>
-                        <input type="radio" value="always" id="error_msg_visibility-always-PID" name="problem[PID][error_msg_visibility]"/>
-                        {{ _("Always visible") }}
-                    </label><br/>
-                    <div class="row">
-                        <div class="col-xs-12 col-lg-3">
-                            <label>
-                                <input type="radio" value="after_attempt" id="error_msg_visibility-after_attempt-PID" name="problem[PID][error_msg_visibility]"/>
-                                {{ _("Visible after : {nbr_attempts} attempts").format(nbr_attempts='</label></div><div class="col-xs-offset-1 col-lg-offset-0 col-xs-11 col-lg-2"><input id="error_msg_attempts-PID" name="problem[PID][error_msg_attempts]" class="form-control input-xs" style="height:20px;padding: 0 10px;" placeholder="5" type="number"></div><div class="col-xs-offset-1 col-lg-offset-0 col-xs-11 col-lg-3"><label>') | safe }}
-                            </label>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-12 col-lg-3">
-                            <label class="control-label">
-                                <input type="radio" value="hidden_until" id="error_msg_visibility-hidden_until-PID" name="problem[PID][error_msg_visibility]"/>
-                                {{ _("Hidden until : ") }}
-                            </label>
-                        </div>
-                        <div class="col-xs-offset-1 col-lg-offset-0 col-xs-11 col-lg-4">
-                            <div class='input-group date' id='error_msg_visibility_start-PID' data-target-input="nearest" >
-                                    <input name="problem[PID][error_msg_visibility_start]" id="error_msg_date_picker-PID" data-target="#error_msg_visibility_start-PID" data-date-format="YYYY-MM-DD HH:mm:ss" placeholder="2021-06-29 10:00" type='text' class="form-control datetimepicker-input" />
-                                    <div class="input-group-append" data-target="#error_msg_visibility_start-PID" data-toggle="datetimepicker" >
-                                            <div class="input-group-text"><i class="fa fa-calendar" ></i></div>
-                                    </div>
-                            </div>
-                        </div>
-                        <script type="text/javascript">
-                            $(function() {
-                                $('#error_msg_visibility_start-PID').datetimepicker({locale: '{{user_manager.session_language()}}', sideBySide: true, format:'YYYY-MM-DD HH:mm:ss'});
-                            });
-                        </script>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 {% endif %}
