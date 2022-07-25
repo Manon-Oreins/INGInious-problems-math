@@ -18,6 +18,11 @@ function studio_init_template_math(well, pid, problem)
     var success_message = "";
     var error_message = "";
     var hints = "";
+    var error_msg_visibility = 'always';
+    var error_msg_visibility_start = problem["error_msg_visibility_start"];
+    var error_msg_attempts = problem["error_msg_attempts"];
+    if("error_msg_visibility" in problem)
+        error_msg_visibility = problem["error_msg_visibility"];
     if("tolerance" in problem)
         tolerance = problem["tolerance"];
     if("success_message" in problem)
@@ -30,6 +35,10 @@ function studio_init_template_math(well, pid, problem)
         problem["answers"] = [problem["answer"]]
 
     $("#tolerance-" + pid).val(tolerance);
+    $("#error_msg_visibility-" + error_msg_visibility + "-" +  pid).prop("checked", true);
+    $("#error_msg_attempts-" + pid).prop("value", error_msg_attempts);
+    $("#error_msg_date_picker-" + pid).prop("value", error_msg_visibility_start);
+
     registerCodeEditor($('#success_message-' + pid)[0], 'rst', 1).setValue(success_message);
     registerCodeEditor($('#error_message-' + pid)[0], 'rst', 1).setValue(error_message);
     registerCodeEditor($('#hints-' + pid)[0], 'rst', 1).setValue(hints);
