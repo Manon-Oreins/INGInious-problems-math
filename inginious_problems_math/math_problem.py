@@ -6,7 +6,7 @@ import math
 from sympy.core import Number
 from sympy.parsing.latex import parse_latex
 from sympy.printing.latex import latex
-from sympy import simplify, sympify, N, E, pi, I, Equality, Unequality, StrictLessThan, LessThan, StrictGreaterThan, GreaterThan
+from sympy import simplify, sympify, factor, expand_trig, expand_log, N, E, pi, I, Equality, Unequality, StrictLessThan, LessThan, StrictGreaterThan, GreaterThan
 from inginious.common.tasks_problems import Problem
 from inginious.frontend.task_problems import DisplayableProblem
 from inginious.frontend.parsable_text import ParsableText
