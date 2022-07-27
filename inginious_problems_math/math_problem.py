@@ -117,8 +117,7 @@ class MathProblem(Problem):
                 submission_date = datetime.strptime(submission_date, '%Y-%m-%d %X')
                 return submission_date >= datetime.strptime(self._error_msg_visibility_start, '%Y-%m-%d %X')
             except ValueError:
-                #Default behavior is to show the error message if the date format isn't correct
-                return True
+                raise ValueError("Invalid date format")
         if self._error_message_visibility == "after_attempt":
             nbr_attempts = int(task_input.get("@attempts", "0"))
             return nbr_attempts >= int(self._error_msg_attempts)
@@ -196,9 +195,7 @@ class MathProblem(Problem):
                 try:
                     datetime.strptime(problem_content["error_msg_visibility_start"], '%Y-%m-%d %X')
                 except ValueError:
-                    print("ValE")
-                    #Default behavior is to always show the error message if the format of the date isn't correct
-                    problem_content["error_msg_visibility_start"] = "2000-01-01 00:00:00"
+                    raise ValueError("Invalid date format")
 
         if "error_msg_attempts" in problem_content and problem_content["error_msg_attempts"] == '':
             del problem_content["error_msg_attempts"]
