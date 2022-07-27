@@ -18,11 +18,11 @@
 import sys
 import os
 sys.path.insert(0, os.path.abspath('../inginious_problems_math/'))
-sys.path.insert(1, os.path.abspath('../base-containers/base/'))
+#sys.path.insert(1, os.path.abspath('../base-containers/base/'))
 import inginious_problems_math
 import sphinx_rtd_theme
 
-autodoc_mock_imports = ['cgutils', 'ldap3', 'tidylib', 'onelogin']
+#autodoc_mock_imports = ['cgutils', 'ldap3', 'tidylib', 'onelogin']
 
 # -- General configuration ------------------------------------------------
 
@@ -32,16 +32,17 @@ autodoc_mock_imports = ['cgutils', 'ldap3', 'tidylib', 'onelogin']
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
+"""
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
     'sphinx_tabs.tabs',
     'IPython.sphinxext.ipython_console_highlighting',
     'sphinx_autodoc_typehints'
-]
+]"""
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+#templates_path = ['_templates']
 
 # The suffix of source filenames.
 source_suffix = '.rst'
@@ -95,7 +96,7 @@ exclude_patterns = ['_build']
 #show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+#pygments_style = 'sphinx'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
