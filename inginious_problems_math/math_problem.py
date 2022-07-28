@@ -37,6 +37,7 @@ class MathProblem(Problem):
         self._error_message_visibility = content.get("error_msg_visibility", "always")
         self._error_msg_attempts = content.get("error_msg_attempts", 0)
         self._error_msg_visibility_start = content.get("error_msg_visibility_start", "2000-01-01 00:00:00")
+        print(self._error_msg_visibility_start)
 
     @classmethod
     def get_type(cls):
@@ -188,17 +189,17 @@ class MathProblem(Problem):
     def parse_problem(cls, problem_content):
         problem_content = Problem.parse_problem(problem_content)
 
-        if "error_msg_visibility_start" in problem_content:
+        if "error_msg_visibility_start" in problem_content and problem_content["error_msg_visibility"] == "hidden_until":
             if problem_content["error_msg_visibility_start"] == '':
-                del problem_content["error_msg_visibility_start"]
+                problem_content["error_msg_visibility_start"] = '2000-01-01 00:00:00'
             else:
                 try:
                     datetime.strptime(problem_content["error_msg_visibility_start"], '%Y-%m-%d %X')
                 except ValueError:
                     raise ValueError("Invalid date format")
 
-        if "error_msg_attempts" in problem_content and problem_content["error_msg_attempts"] == '':
-            del problem_content["error_msg_attempts"]
+        if "error_msg_attempts" in problem_content and problem_content["error_msg_visibility"] == "after_attempt" and problem_content["error_msg_attempts"] == '':
+            problem_content["error_msg_attempts"] = 0
             
         if "tolerance" in problem_content:
             if problem_content["tolerance"]:
