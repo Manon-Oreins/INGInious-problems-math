@@ -37,7 +37,6 @@ class MathProblem(Problem):
         self._error_message_visibility = content.get("error_msg_visibility", "always")
         self._error_msg_attempts = content.get("error_msg_attempts", 0)
         self._error_msg_visibility_start = content.get("error_msg_visibility_start", "2000-01-01 00:00:00")
-        print(self._error_msg_visibility_start)
 
     @classmethod
     def get_type(cls):
